@@ -1,0 +1,23 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Enable pnpm
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+# Copy package definition files first for efficient caching
+COPY package.json pnpm-lock.yaml ./
+
+# Install dependencies and clean cache to keep image lightweight
+RUN pnpm install --frozen-lockfile && pnpm store prune
+
+# Copy application source
+COPY . .
+
+# Generate Prisma Client
+RUN npx prisma generate
+
+EXPOSE 3000
+
+# Auto-sync new dependencies on startup & run dev server
+CMD ["sh", "-c", "pnpm install && npx prisma db push && pnpm run dev:docker"]

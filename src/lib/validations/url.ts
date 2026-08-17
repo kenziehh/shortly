@@ -1,0 +1,84 @@
+import { z } from 'zod';
+
+export const createUrlSchema = z.object({
+  title: z.string().optional(),
+  originalUrl: z
+    .string()
+    .min(1, { message: 'Destination URL is required.' })
+    .transform((url) => {
+      let trimmed = url.trim();
+      if (!trimmed.startsWith('http://') && !trimmed.startsWith('https://')) {
+        return 'https://' + trimmed;
+      }
+      return trimmed;
+    })
+    .pipe(z.string().url({ message: 'Please enter a valid destination URL (e.g. https://example.com).' })),
+  customAlias: z
+    .string()
+    .optional()
+    .refine(
+      (val) => !val || !val.includes('/'),
+      { message: 'Custom alias cannot contain slashes (/).' }
+    )
+    .refine(
+      (val) => !val || /^[a-zA-Z0-9_-]+$/.test(val),
+      { message: 'Custom alias can only contain letters, numbers, hyphens (-), and underscores (_).' }
+    )
+    .refine(
+      (val) => !val || val.length >= 3,
+      { message: 'Custom alias must be at least 3 characters long.' }
+    ),
+  password: z.string().optional(),
+  maxClicks: z
+    .string()
+    .optional()
+    .refine(
+      (val) => !val || (!isNaN(Number(val)) && Number(val) >= 1),
+      { message: 'Max clicks must be a positive number.' }
+    ),
+  expiresAt: z.string().optional(),
+});
+
+export type CreateUrlFormValues = z.infer<typeof createUrlSchema>;
+
+export const editUrlSchema = z.object({
+  title: z.string().optional(),
+  originalUrl: z
+    .string()
+    .min(1, { message: 'Destination URL is required.' })
+    .transform((url) => {
+      let trimmed = url.trim();
+      if (!trimmed.startsWith('http://') && !trimmed.startsWith('https://')) {
+        return 'https://' + trimmed;
+      }
+      return trimmed;
+    })
+    .pipe(z.string().url({ message: 'Please enter a valid destination URL.' })),
+  customAlias: z
+    .string()
+    .optional()
+    .refine(
+      (val) => !val || !val.includes('/'),
+      { message: 'Custom alias cannot contain slashes (/).' }
+    )
+    .refine(
+      (val) => !val || /^[a-zA-Z0-9_-]+$/.test(val),
+      { message: 'Custom alias can only contain letters, numbers, -, _.' }
+    )
+    .refine(
+      (val) => !val || val.length >= 3,
+      { message: 'Custom alias must be at least 3 characters long.' }
+    ),
+  password: z.string().optional(),
+  removePassword: z.boolean().optional(),
+  maxClicks: z
+    .string()
+    .optional()
+    .refine(
+      (val) => !val || (!isNaN(Number(val)) && Number(val) >= 1),
+      { message: 'Max clicks must be a positive number.' }
+    ),
+  expiresAt: z.string().optional(),
+});
+
+export type EditUrlFormValues = z.infer<typeof editUrlSchema>;
