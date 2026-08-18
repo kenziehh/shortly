@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, use } from 'react';
+import { useState, use } from 'react';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import {
@@ -16,6 +16,7 @@ import {
   Eye,
   Layers,
 } from 'lucide-react';
+import { useGetUrlAnalytics } from '@/hooks/useAnalytics';
 import QRCodeModal from '@/components/QRCodeModal';
 import { Button } from '@/components/ui/button';
 import {
@@ -53,31 +54,13 @@ const COLOR_PALETTE = ['#0038b1', '#059669', '#7c3aed', '#ea580c', '#0284c7', '#
 export default function AnalyticsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
 
-  const [data, setData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
   const [copied, setCopied] = useState(false);
   const [qrOpen, setQrOpen] = useState(false);
 
-  useEffect(() => {
-    fetch(`/api/urls/${id}`)
-      .then((res) => {
-        if (!res.ok) throw new Error('Analytics data not found or unauthorized');
-        return res.json();
-      })
-      .then((resData) => {
-        setData(resData);
-      })
-      .catch((err) => {
-        setError(err.message);
-        toast.error(err.message);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, [id]);
+  // TanStack React Query for Analytics Data
+  const { data, isLoading, error } = useGetUrlAnalytics(id);
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="relative overflow-x-hidden min-h-screen flex items-center justify-center bg-[#f8fafc]">
         <div className="text-center font-sans text-sm text-[#5b5e68] space-y-2">
@@ -93,7 +76,7 @@ export default function AnalyticsPage({ params }: { params: Promise<{ id: string
       <div className="relative overflow-x-hidden min-h-screen flex flex-col items-center justify-center p-6 bg-[#f8fafc]">
         <div className="rounded-3xl p-8 max-w-md text-center space-y-4 border border-[#e2e8f0] bg-white shadow-xl">
           <div className="p-3.5 bg-rose-50 border border-rose-200 text-rose-700 text-sm font-sans rounded-xl font-medium">
-            {error || 'Analytics item not found.'}
+            {(error as any)?.message || 'Analytics item not found.'}
           </div>
           <Link href="/dashboard">
             <Button className="rounded-xl bg-primary text-white hover:bg-primary-hover text-sm font-semibold">
@@ -180,7 +163,7 @@ export default function AnalyticsPage({ params }: { params: Promise<{ id: string
             </div>
           </div>
 
-          <div className="bg-white border border-[#e2e8f0] rounded-2xl p-6 space-y-2 shadow-xs">
+          <div className="bg-[#ffffff] border border-[#e2e8f0] rounded-2xl p-6 space-y-2 shadow-xs">
             <div className="flex items-center justify-between text-[#64748b] text-xs font-sans font-semibold uppercase tracking-wider">
               <span>Created At</span>
               <Calendar className="w-4 h-4 text-primary" />

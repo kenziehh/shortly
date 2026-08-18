@@ -1,7 +1,6 @@
 'use client';
 
-import { useState } from 'react';
-import { toast } from 'sonner';
+import { useToggleUrlStatus } from '@/hooks/useUrls';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -11,79 +10,71 @@ import {
 interface ToggleStatusModalProps {
   urlItem: any | null;
   onClose: () => void;
-  onSuccess: () => void;
 }
 
-export default function ToggleStatusModal({ urlItem, onClose, onSuccess }: ToggleStatusModalProps) {
-  const [loading, setLoading] = useState(false);
+export default function ToggleStatusModal({ urlItem, onClose }: ToggleStatusModalProps) {
+  const toggleMutation = useToggleUrlStatus();
 
   if (!urlItem) return null;
 
   const isCurrentlyActive = urlItem.isActive;
 
-  const confirmToggleStatus = async () => {
-    setLoading(true);
-
-    try {
-      const res = await fetch(`/api/urls/${urlItem.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ isActive: !isCurrentlyActive }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || 'Failed to update link status.');
+  const confirmToggleStatus = () => {
+    toggleMutation.mutate(
+      { id: urlItem.id, isActive: !isCurrentlyActive },
+      {
+        onSuccess: () => {
+          onClose();
+        },
       }
-
-      toast.success(isCurrentlyActive ? 'Link deactivated.' : 'Link activated.');
-      onClose();
-      onSuccess();
-    } catch (err: any) {
-      toast.error(err.message);
-    } finally {
-      setLoading(false);
-    }
+    );
   };
 
   return (
-    <Dialog open={!!urlItem} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="sm:max-w-[520px] p-8 rounded-2xl border border-[#e2e8f0] bg-white shadow-2xl space-y-6">
-        <div className="space-y-3 text-left">
-          <h2 className="text-xl font-bold text-foreground tracking-tight">
-            {isCurrentlyActive ? 'Deactivate short link?' : 'Activate short link?'}
-          </h2>
-          <p className="text-base text-[#64748b] leading-relaxed">
+    <Dialog open={!!urlItem} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-[440px] p-6 rounded-2xl border border-[#e2e8f0] bg-white shadow-xl space-y-5">
+        <div className="space-y-2 text-left">
+          <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-xl mb-2 ${
+            isCurrentlyActive ? 'bg-amber-50 border border-amber-100 text-amber-600' : 'bg-emerald-50 border border-emerald-100 text-emerald-600'
+          }`}>
+            {isCurrentlyActive ? '⏸' : '▶'}
+          </div>
+          <h3 className="font-heading text-xl font-bold text-[#0f172a]">
+            {isCurrentlyActive ? 'Deactivate short link?' : 'Reactivate short link?'}
+          </h3>
+          <p className="text-sm text-[#64748b] font-sans leading-relaxed">
             {isCurrentlyActive ? (
               <>
-                Deactivate <code className="text-foreground bg-[#f1f5f9] border border-[#e2e8f0] px-2.5 py-1 rounded-lg font-mono text-sm font-bold">/{urlItem?.shortCode}</code>? Visitors will receive an expired page until reactivated.
+                Deactivating <strong className="text-[#0f172a]">/{urlItem.customAlias || urlItem.shortCode}</strong> will cause visitors to see an expired page instead of redirecting.
               </>
             ) : (
               <>
-                Reactivate <code className="text-foreground bg-[#f1f5f9] border border-[#e2e8f0] px-2.5 py-1 rounded-lg font-mono text-sm font-bold">/{urlItem?.shortCode}</code>? Visitors will immediately be redirected.
+                Reactivating <strong className="text-[#0f172a]">/{urlItem.customAlias || urlItem.shortCode}</strong> will restore instant redirects for all visitors.
               </>
             )}
           </p>
         </div>
 
-        <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#f1f5f9]">
+        <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#f1f5f9]">
           <Button
             type="button"
             variant="outline"
             onClick={onClose}
-            className="h-11 px-6 rounded-xl border-[#e2e8f0] text-sm font-semibold text-foreground hover:bg-[#f8fafc] cursor-pointer"
+            className="h-10 px-5 rounded-xl border-[#e2e8f0] text-sm font-semibold text-[#0f172a] hover:bg-[#f8fafc] cursor-pointer"
           >
             Cancel
           </Button>
           <Button
             type="button"
-            disabled={loading}
             onClick={confirmToggleStatus}
-            className={`h-11 px-6 rounded-xl text-white text-sm font-semibold cursor-pointer shadow-sm ${
-              isCurrentlyActive ? 'bg-amber-600 hover:bg-amber-700' : 'bg-primary hover:bg-primary-hover'
+            disabled={toggleMutation.isPending}
+            className={`h-10 px-5 rounded-xl text-white text-sm font-semibold cursor-pointer shadow-xs ${
+              isCurrentlyActive ? 'bg-amber-600 hover:bg-amber-700' : 'bg-emerald-600 hover:bg-emerald-700'
             }`}
           >
-            {loading ? 'Updating...' : isCurrentlyActive ? 'Deactivate Link' : 'Activate Link'}
+            {toggleMutation.isPending
+              ? isCurrentlyActive ? 'Deactivating...' : 'Reactivating...'
+              : isCurrentlyActive ? 'Confirm Deactivate' : 'Confirm Reactivate'}
           </Button>
         </div>
       </DialogContent>

@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { toast } from 'sonner';
 import { createUrlSchema, type CreateUrlFormValues } from '@/lib/validations/url';
+import { useCreateUrl } from '@/hooks/useUrls';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -25,11 +25,10 @@ import {
 interface CreateUrlModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSuccess: () => void;
 }
 
-export default function CreateUrlModal({ isOpen, onClose, onSuccess }: CreateUrlModalProps) {
-  const [loading, setLoading] = useState(false);
+export default function CreateUrlModal({ isOpen, onClose }: CreateUrlModalProps) {
+  const createMutation = useCreateUrl();
   const [domainHost, setDomainHost] = useState('shortly.to');
 
   useEffect(() => {
@@ -50,37 +49,23 @@ export default function CreateUrlModal({ isOpen, onClose, onSuccess }: CreateUrl
     },
   });
 
-  const onSubmit = async (values: CreateUrlFormValues) => {
-    setLoading(true);
-
-    try {
-      const res = await fetch('/api/urls', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: values.title || undefined,
-          originalUrl: values.originalUrl,
-          customAlias: values.customAlias || undefined,
-          password: values.password || undefined,
-          maxClicks: values.maxClicks ? parseInt(values.maxClicks, 10) : undefined,
-          expiresAt: values.expiresAt || undefined,
-        }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || 'Failed to create short link.');
+  const onSubmit = (values: CreateUrlFormValues) => {
+    createMutation.mutate(
+      {
+        title: values.title || undefined,
+        originalUrl: values.originalUrl,
+        customAlias: values.customAlias || undefined,
+        password: values.password || undefined,
+        maxClicks: values.maxClicks ? parseInt(values.maxClicks, 10) : undefined,
+        expiresAt: values.expiresAt || undefined,
+      },
+      {
+        onSuccess: () => {
+          form.reset();
+          onClose();
+        },
       }
-
-      toast.success('Short link created successfully!');
-      form.reset();
-      onClose();
-      onSuccess();
-    } catch (err: any) {
-      toast.error(err.message);
-    } finally {
-      setLoading(false);
-    }
+    );
   };
 
   return (
@@ -245,10 +230,10 @@ export default function CreateUrlModal({ isOpen, onClose, onSuccess }: CreateUrl
               </Button>
               <Button
                 type="submit"
-                disabled={loading}
+                disabled={createMutation.isPending}
                 className="h-10 px-5 rounded-xl bg-primary hover:bg-primary-hover text-white text-sm font-semibold cursor-pointer"
               >
-                {loading ? 'Creating...' : 'Create Link'}
+                {createMutation.isPending ? 'Creating...' : 'Create Link'}
               </Button>
             </div>
           </form>

@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { toast } from 'sonner';
 import { editUrlSchema, type EditUrlFormValues } from '@/lib/validations/url';
+import { useUpdateUrl } from '@/hooks/useUrls';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -26,7 +26,6 @@ interface EditUrlModalProps {
   isOpen: boolean;
   urlItem: any | null;
   onClose: () => void;
-  onSuccess: () => void;
 }
 
 const formatLocalDatetime = (dateInput: Date | string) => {
@@ -37,8 +36,8 @@ const formatLocalDatetime = (dateInput: Date | string) => {
   return new Date(d.getTime() - tzOffset).toISOString().slice(0, 16);
 };
 
-export default function EditUrlModal({ isOpen, urlItem, onClose, onSuccess }: EditUrlModalProps) {
-  const [loading, setLoading] = useState(false);
+export default function EditUrlModal({ isOpen, urlItem, onClose }: EditUrlModalProps) {
+  const updateMutation = useUpdateUrl();
 
   // Removal Checkboxes State
   const [removePassword, setRemovePassword] = useState(false);
@@ -82,15 +81,13 @@ export default function EditUrlModal({ isOpen, urlItem, onClose, onSuccess }: Ed
     }
   }, [urlItem, form]);
 
-  const onSubmit = async (values: EditUrlFormValues) => {
+  const onSubmit = (values: EditUrlFormValues) => {
     if (!urlItem) return;
-    setLoading(true);
 
-    try {
-      const res = await fetch(`/api/urls/${urlItem.id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+    updateMutation.mutate(
+      {
+        id: urlItem.id,
+        payload: {
           title: values.title || '',
           originalUrl: values.originalUrl,
           customAlias: values.customAlias || '',
@@ -100,26 +97,14 @@ export default function EditUrlModal({ isOpen, urlItem, onClose, onSuccess }: Ed
           removeMaxClicks: removeMaxClicks,
           expiresAt: removeExpiresAt ? '' : values.expiresAt || '',
           removeExpiresAt: removeExpiresAt,
-        }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) {
-        let msg = data.error || 'Failed to update short link.';
-        if (Array.isArray(data.details)) {
-          msg = data.details[0]?.message || msg;
-        }
-        throw new Error(msg);
+        },
+      },
+      {
+        onSuccess: () => {
+          onClose();
+        },
       }
-
-      toast.success('Short link settings updated successfully!');
-      onClose();
-      onSuccess();
-    } catch (err: any) {
-      toast.error(err.message);
-    } finally {
-      setLoading(false);
-    }
+    );
   };
 
   const hasAnyActiveRules = urlItem?.password || urlItem?.maxClicks || urlItem?.expiresAt;
@@ -279,7 +264,7 @@ export default function EditUrlModal({ isOpen, urlItem, onClose, onSuccess }: Ed
               )}
             />
 
-            {/* Removal Checkboxes Grid (Placed at the very bottom, below Expiration Date) */}
+            {/* Removal Checkboxes Grid */}
             {hasAnyActiveRules && (
               <div className="space-y-2 pt-2">
                 <div className="text-xs font-bold uppercase text-[#64748b] tracking-wider">
@@ -347,10 +332,10 @@ export default function EditUrlModal({ isOpen, urlItem, onClose, onSuccess }: Ed
               </Button>
               <Button
                 type="submit"
-                disabled={loading}
+                disabled={updateMutation.isPending}
                 className="h-10 px-5 rounded-xl bg-primary hover:bg-primary-hover text-white text-sm font-semibold cursor-pointer"
               >
-                {loading ? 'Saving...' : 'Save Changes'}
+                {updateMutation.isPending ? 'Saving...' : 'Save Changes'}
               </Button>
             </div>
           </form>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
+import { useGetUrls } from '@/hooks/useUrls';
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
 import DashboardKpiCards from '@/components/dashboard/DashboardKpiCards';
 import DashboardToolbar from '@/components/dashboard/DashboardToolbar';
@@ -14,8 +15,6 @@ import QRCodeModal from '@/components/QRCodeModal';
 
 export default function DashboardPage() {
   const [user, setUser] = useState<any>(null);
-  const [urls, setUrls] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
 
   // Search & Filter State with 300ms Debounce
   const [search, setSearch] = useState('');
@@ -25,12 +24,6 @@ export default function DashboardPage() {
   // Pagination State
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
-  const [paginationMeta, setPaginationMeta] = useState({
-    totalCount: 0,
-    page: 1,
-    limit: 10,
-    totalPages: 1,
-  });
 
   // Modal Control States
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -42,7 +35,7 @@ export default function DashboardPage() {
   const [selectedQrUrl, setSelectedQrUrl] = useState<{ url: string; title: string } | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  // Debounce search effect (300ms delay) reset to page 1
+  // 300ms Search Debounce Effect
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(search);
@@ -52,47 +45,35 @@ export default function DashboardPage() {
     return () => clearTimeout(timer);
   }, [search]);
 
-  const fetchUserData = async () => {
-    try {
-      const res = await fetch('/api/auth/me');
-      const data = await res.json();
-      if (data.user) {
-        setUser(data.user);
-      } else {
-        window.location.href = '/login';
-      }
-    } catch {
-      window.location.href = '/login';
-    }
-  };
-
-  const fetchUrls = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch(
-        `/api/urls?search=${encodeURIComponent(debouncedSearch)}&status=${statusFilter}&page=${page}&limit=${limit}`
-      );
-      const data = await res.json();
-      if (data.urls) {
-        setUrls(data.urls);
-        if (data.pagination) {
-          setPaginationMeta(data.pagination);
-        }
-      }
-    } catch (err) {
-      console.error('Fetch urls error:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // Fetch Current User Session
   useEffect(() => {
-    fetchUserData();
+    fetch('/api/auth/me')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.user) {
+          setUser(data.user);
+        } else {
+          window.location.href = '/login';
+        }
+      })
+      .catch(() => {
+        window.location.href = '/login';
+      });
   }, []);
 
-  useEffect(() => {
-    if (user) fetchUrls();
-  }, [user, debouncedSearch, statusFilter, page, limit]);
+  // TanStack React Query for URLs List
+  const { data: urlsData, isLoading, refetch } = useGetUrls(
+    { search: debouncedSearch, status: statusFilter, page, limit },
+    !!user
+  );
+
+  const urls = urlsData?.urls || [];
+  const paginationMeta = urlsData?.pagination || {
+    totalCount: 0,
+    page: 1,
+    limit: 10,
+    totalPages: 1,
+  };
 
   const copyLink = (code: string, id: string) => {
     const full = `${window.location.protocol}//${window.location.host}/${code}`;
@@ -103,8 +84,8 @@ export default function DashboardPage() {
   };
 
   // Metrics Calculation
-  const totalClicks = urls.reduce((acc, u) => acc + (u.clickCount || 0), 0);
-  const activeCount = urls.filter((u) => u.isActive && (!u.expiresAt || new Date(u.expiresAt) > new Date())).length;
+  const totalClicks = urls.reduce((acc: number, u: any) => acc + (u.clickCount || 0), 0);
+  const activeCount = urls.filter((u: any) => u.isActive && (!u.expiresAt || new Date(u.expiresAt) > new Date())).length;
   const expiredCount = urls.length - activeCount;
 
   return (
@@ -126,28 +107,26 @@ export default function DashboardPage() {
           expiredCount={expiredCount}
         />
 
-        {/* Search & Filter Toolbar with 300ms Debounce */}
+        {/* Search & Filter Toolbar */}
         <DashboardToolbar
           search={search}
-          onSearchChange={(val) => {
-            setSearch(val);
-          }}
+          onSearchChange={setSearch}
           statusFilter={statusFilter}
           onStatusFilterChange={(val) => {
             setStatusFilter(val);
             setPage(1);
           }}
-          onRefresh={fetchUrls}
+          onRefresh={refetch}
         />
 
-        {/* Expanded Multi-Column Table Layout with Shadcn UI Pagination */}
+        {/* Expanded Multi-Column Table Layout */}
         <DashboardTable
           urls={urls}
-          loading={loading}
+          loading={isLoading}
           search={search}
           copiedId={copiedId}
           pagination={paginationMeta}
-          onPageChange={(newPage) => setPage(newPage)}
+          onPageChange={setPage}
           onLimitChange={(newLimit) => {
             setLimit(newLimit);
             setPage(1);
@@ -165,7 +144,6 @@ export default function DashboardPage() {
       <CreateUrlModal
         isOpen={isCreateOpen}
         onClose={() => setIsCreateOpen(false)}
-        onSuccess={fetchUrls}
       />
 
       {/* Edit Link Modal */}
@@ -173,21 +151,18 @@ export default function DashboardPage() {
         isOpen={!!editingUrl}
         urlItem={editingUrl}
         onClose={() => setEditingUrl(null)}
-        onSuccess={fetchUrls}
       />
 
       {/* Delete Link Modal */}
       <DeleteUrlModal
         urlItem={deletingUrl}
         onClose={() => setDeletingUrl(null)}
-        onSuccess={fetchUrls}
       />
 
       {/* Toggle Status Confirmation Modal */}
       <ToggleStatusModal
         urlItem={togglingUrl}
         onClose={() => setTogglingUrl(null)}
-        onSuccess={fetchUrls}
       />
 
       {/* QR Code Viewer Asset Modal */}

@@ -1,32 +1,16 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { LayoutDashboard, LogIn, UserPlus, LogOut, User } from 'lucide-react';
+import { useCurrentUser, useLogout } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
 export default function Navbar() {
   const pathname = usePathname();
-  const router = useRouter();
-  const [user, setUser] = useState<{ name: string; email: string; maxUrlLimit: number; urlCount?: number } | null>(null);
-
-  useEffect(() => {
-    fetch('/api/auth/me')
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.user) setUser(data.user);
-      })
-      .catch(() => {});
-  }, [pathname]);
-
-  const handleLogout = async () => {
-    await fetch('/api/auth/logout', { method: 'POST' });
-    setUser(null);
-    router.push('/login');
-    router.refresh();
-  };
+  const { data: user } = useCurrentUser();
+  const logoutMutation = useLogout();
 
   if (pathname === '/login' || pathname === '/register') {
     return null;
@@ -107,7 +91,8 @@ export default function Navbar() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={handleLogout}
+              onClick={() => logoutMutation.mutate()}
+              disabled={logoutMutation.isPending}
               className="rounded-xl text-sm text-destructive hover:bg-destructive/10 cursor-pointer h-10 w-10 p-0 flex items-center justify-center"
               title="Log Out"
             >

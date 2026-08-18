@@ -1,14 +1,13 @@
 'use client';
 
-import { useState, Suspense } from 'react';
-import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { toast } from 'sonner';
 import { ArrowRight, Mail, KeyRound } from 'lucide-react';
 import { loginSchema, type LoginFormValues } from '@/lib/validations/auth';
+import { useLogin } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
   Form,
   FormField,
@@ -19,10 +18,7 @@ import {
 } from '@/components/ui/form';
 
 function LoginFormContent() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const redirectUrl = searchParams.get('redirect') || '/dashboard';
-  const [loading, setLoading] = useState(false);
+  const loginMutation = useLogin();
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -32,27 +28,8 @@ function LoginFormContent() {
     },
   });
 
-  const onSubmit = async (values: LoginFormValues) => {
-    setLoading(true);
-    try {
-      const res = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(values),
-      });
-
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || 'Invalid credentials.');
-      }
-
-      toast.success('Signed in successfully! Welcome back.');
-      router.push(redirectUrl);
-      router.refresh();
-    } catch (err: any) {
-      toast.error(err.message);
-      setLoading(false);
-    }
+  const onSubmit = (values: LoginFormValues) => {
+    loginMutation.mutate(values);
   };
 
   return (
@@ -69,12 +46,12 @@ function LoginFormContent() {
               </FormLabel>
               <FormControl>
                 <div className="relative flex items-center">
-                  <Mail className="w-5 h-5 text-[#747685] absolute left-4" />
-                  <input
+                  <Mail className="w-5 h-5 text-[#747685] absolute left-4 z-10 pointer-events-none" />
+                  <Input
                     {...field}
                     type="email"
                     placeholder="alex@company.com"
-                    className="input-glass w-full h-[56px] pl-[48px] pr-4 rounded-xl text-base text-foreground outline-none"
+                    className="w-full h-[56px] pl-[48px] pr-4 rounded-xl text-base text-foreground border-[#e2e8f0] bg-[#f8fafc] focus:bg-white transition-all"
                   />
                 </div>
               </FormControl>
@@ -94,12 +71,12 @@ function LoginFormContent() {
               </FormLabel>
               <FormControl>
                 <div className="relative flex items-center">
-                  <KeyRound className="w-5 h-5 text-[#747685] absolute left-4" />
-                  <input
+                  <KeyRound className="w-5 h-5 text-[#747685] absolute left-4 z-10 pointer-events-none" />
+                  <Input
                     {...field}
                     type="password"
                     placeholder="••••••••"
-                    className="input-glass w-full h-[56px] pl-[48px] pr-4 rounded-xl text-base text-foreground outline-none"
+                    className="w-full h-[56px] pl-[48px] pr-4 rounded-xl text-base text-foreground border-[#e2e8f0] bg-[#f8fafc] focus:bg-white transition-all"
                   />
                 </div>
               </FormControl>
@@ -110,11 +87,11 @@ function LoginFormContent() {
 
         <Button
           type="submit"
-          disabled={loading}
+          disabled={loginMutation.isPending}
           className="w-full h-[56px] rounded-xl bg-primary hover:bg-primary-hover text-white font-semibold text-lg shadow-lg shadow-primary/20 transition-all hover:scale-[0.98] flex items-center justify-center gap-2 mt-2 cursor-pointer"
         >
-          {loading ? 'Signing in...' : 'Sign In to Dashboard'}
-          {!loading && <ArrowRight className="w-5 h-5" />}
+          {loginMutation.isPending ? 'Signing in...' : 'Sign In to Dashboard'}
+          {!loginMutation.isPending && <ArrowRight className="w-5 h-5" />}
         </Button>
       </form>
     </Form>
