@@ -2,6 +2,7 @@
 
 import { useState, use } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { toast } from 'sonner';
 import { Lock, ArrowRight, KeyRound } from 'lucide-react';
 import { useVerifyPassword } from '@/hooks/usePasscode';
@@ -38,9 +39,14 @@ export default function PasswordPage({ params }: { params: Promise<{ shortCode: 
           {/* Header */}
           <div className="text-center space-y-2">
             <Link href="/" className="inline-block mb-2">
-              <span className="font-heading text-3xl font-extrabold tracking-tight text-primary">
-                Shortly<span className="text-[#0f172a]">.</span>
-              </span>
+              <Image
+                src="/shortly-nav.png"
+                alt="Shortly Logo"
+                width={280}
+                height={80}
+                priority
+                className="h-14 md:h-16 w-auto mx-auto object-contain"
+              />
             </Link>
 
             <div className="w-12 h-12 rounded-2xl bg-secondary flex items-center justify-center text-primary mx-auto mb-3">

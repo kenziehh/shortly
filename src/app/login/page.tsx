@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import LoginForm from '@/components/auth/LoginForm';
 
 export default function LoginPage() {
@@ -13,9 +14,14 @@ export default function LoginPage() {
           {/* Header */}
           <div className="text-center space-y-2">
             <Link href="/" className="inline-block mb-2">
-              <span className="font-heading text-3xl font-extrabold tracking-tight text-[#0038b1]">
-                Shortly<span className="text-[#091b38]">.</span>
-              </span>
+              <Image
+                src="/shortly-nav.png"
+                alt="Shortly Logo"
+                width={280}
+                height={80}
+                priority
+                className="h-14 md:h-16 w-auto mx-auto object-contain"
+              />
             </Link>
 
             <h1 className="font-heading text-2xl font-extrabold text-[#091b38] tracking-tight">

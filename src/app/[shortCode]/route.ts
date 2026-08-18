@@ -27,6 +27,7 @@ export async function GET(
           <style>
             body { font-family: 'Inter', system-ui, sans-serif; background: #f8fafc; color: #0f172a; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
             .box { border: 1px solid #e2e8f0; padding: 48px 40px; background: #ffffff; max-width: 480px; width: 100%; border-radius: 24px; text-align: center; box-shadow: 0 20px 40px rgba(15, 23, 42, 0.06); }
+            .logo-img { height: 56px; width: auto; max-width: 280px; margin: 0 auto 16px; display: block; object-fit: contain; }
             h1 { font-family: 'Plus Jakarta Sans', sans-serif; color: #0038b1; font-size: 54px; margin: 0; font-weight: 800; line-height: 1; }
             h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 22px; margin: 12px 0 8px; color: #0f172a; font-weight: 700; }
             p { color: #64748b; font-size: 15px; margin-bottom: 28px; line-height: 1.6; }
@@ -36,6 +37,7 @@ export async function GET(
         </head>
         <body>
           <div class="box">
+            <img src="/shortly-nav.png" alt="Shortly Logo" class="logo-img" />
             <h1>404</h1>
             <h2>Link Not Found</h2>
             <p>The short link <strong>${rawCode}</strong> is not registered in our system.</p>
@@ -71,6 +73,7 @@ export async function GET(
           <style>
             body { font-family: 'Inter', system-ui, sans-serif; background: #f8fafc; color: #0f172a; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
             .box { border: 1px solid #e2e8f0; padding: 48px 40px; background: #ffffff; max-width: 480px; width: 100%; border-radius: 24px; text-align: center; box-shadow: 0 20px 40px rgba(15, 23, 42, 0.06); }
+            .logo-img { height: 56px; width: auto; max-width: 280px; margin: 0 auto 16px; display: block; object-fit: contain; }
             h1 { font-family: 'Plus Jakarta Sans', sans-serif; color: #dc2626; font-size: 32px; margin: 0 0 12px; font-weight: 800; }
             p { color: #64748b; font-size: 15px; margin-bottom: 28px; line-height: 1.6; }
             a { display: inline-block; background: #0038b1; color: white; text-decoration: none; padding: 12px 32px; border-radius: 14px; font-weight: 600; font-size: 15px; transition: all 0.2s; }
@@ -79,6 +82,7 @@ export async function GET(
         </head>
         <body>
           <div class="box">
+            <img src="/shortly-nav.png" alt="Shortly Logo" class="logo-img" />
             <h1>Link Expired</h1>
             <p>This short link is inactive, has reached its maximum click limit, or has passed its expiration date.</p>
             <a href="/">Back to Home</a>
@@ -97,7 +101,7 @@ export async function GET(
     // Record Click Analytics Telemetry in Background Service
     await AnalyticsService.recordClick(urlItem.id);
 
-    // Render Premium Circular SVG Progress Bar Interstitial Redirect Page
+    // Render Premium Circular SVG Progress Bar Interstitial Redirect Page with Enriched Brand Logo
     return new NextResponse(
       `<!DOCTYPE html>
       <html lang="en">
@@ -110,7 +114,7 @@ export async function GET(
         <style>
           body { font-family: 'Inter', system-ui, sans-serif; background: #f8fafc; color: #0f172a; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 24px; box-sizing: border-box; }
           .card { border: 1px solid #e2e8f0; padding: 48px 40px; background: #ffffff; max-width: 480px; width: 100%; border-radius: 28px; text-align: center; box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08); }
-          .brand { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 30px; font-weight: 800; color: #0038b1; margin-bottom: 24px; }
+          .brand-logo { height: 64px; width: auto; max-width: 280px; margin: 0 auto 20px; display: block; object-fit: contain; }
           .subtitle { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 20px; font-weight: 700; color: #0f172a; margin-bottom: 24px; }
           
           /* Circular Progress Ring */
@@ -128,7 +132,7 @@ export async function GET(
       </head>
       <body>
         <div class="card">
-          <div class="brand">Shortly<span style="color:#0f172a">.</span></div>
+          <img src="/shortly-nav.png" alt="Shortly Logo" class="brand-logo" />
           <div class="subtitle">Redirecting to destination</div>
           
           <div class="circle-wrapper">

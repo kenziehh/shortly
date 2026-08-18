@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Plus_Jakarta_Sans, Inter, Poppins } from 'next/font/google';
 import Link from 'next/link';
+import Image from 'next/image';
 import './globals.css';
 import Navbar from '@/components/Navbar';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -29,6 +30,14 @@ export const metadata: Metadata = {
   title: 'Shortly - Technical URL Shortener & Analytics Platform',
   description:
     'Modern link management platform with precision analytics, custom aliases, password protection, and expiration dates.',
+  icons: {
+    icon: [
+      { url: '/shortly.png', type: 'image/png' },
+      { url: '/shortly-nav.png', type: 'image/png' },
+    ],
+    shortcut: '/shortly.png',
+    apple: '/shortly.png',
+  },
 };
 
 export default function RootLayout({
@@ -51,9 +60,13 @@ export default function RootLayout({
                   {/* Brand Info */}
                   <div className="space-y-4">
                     <Link href="/" className="inline-block">
-                      <span className="font-heading text-3xl font-extrabold tracking-tight text-primary">
-                        Shortly<span className="text-foreground">.</span>
-                      </span>
+                      <Image
+                        src="/shortly-nav.png"
+                        alt="Shortly Logo"
+                        width={280}
+                        height={80}
+                        className="h-14 w-auto object-contain"
+                      />
                     </Link>
                     <p className="text-base text-[#64748b] leading-relaxed">
                       The premium link management platform with precision analytics telemetry, custom aliases, and enterprise security.

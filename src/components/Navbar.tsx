@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { LayoutDashboard, LogIn, UserPlus, LogOut, User } from 'lucide-react';
 import { useCurrentUser, useLogout } from '@/hooks/useAuth';
@@ -17,12 +18,17 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="fixed top-4 left-0 right-0 z-50 flex justify-between items-center px-6 py-3.5 bg-white/90 backdrop-blur-xl rounded-2xl border border-border/40 shadow-xs max-w-[1400px] mx-auto w-[94%]">
-      {/* Brand Logo */}
-      <Link href="/" className="flex items-center gap-2 group">
-        <span className="font-heading text-2xl font-bold tracking-tight text-primary">
-          Shortly<span className="text-foreground">.</span>
-        </span>
+    <nav className="fixed top-4 left-0 right-0 z-50 flex justify-between items-center px-6 py-3 bg-white/90 backdrop-blur-xl rounded-2xl border border-border/40 shadow-xs max-w-[1400px] mx-auto w-[94%]">
+      {/* Enriched Bold Next.js Image Brand Logo */}
+      <Link href="/" className="flex items-center gap-2 group shrink-0">
+        <Image
+          src="/shortly-nav.png"
+          alt="Shortly Logo"
+          width={280}
+          height={80}
+          priority
+          className="h-14 md:h-16 w-auto object-contain transition-transform group-hover:scale-[1.02]"
+        />
       </Link>
 
       {/* Center Nav Links */}
