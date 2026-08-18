@@ -2,12 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
-
 import DashboardHeader from '@/components/dashboard/DashboardHeader';
 import DashboardKpiCards from '@/components/dashboard/DashboardKpiCards';
 import DashboardToolbar from '@/components/dashboard/DashboardToolbar';
 import DashboardTable from '@/components/dashboard/DashboardTable';
-
 import CreateUrlModal from '@/components/dashboard/CreateUrlModal';
 import EditUrlModal from '@/components/dashboard/EditUrlModal';
 import DeleteUrlModal from '@/components/dashboard/DeleteUrlModal';
@@ -15,13 +13,16 @@ import ToggleStatusModal from '@/components/dashboard/ToggleStatusModal';
 import QRCodeModal from '@/components/QRCodeModal';
 
 export default function DashboardPage() {
-  const [urls, setUrls] = useState<any[]>([]);
   const [user, setUser] = useState<any>(null);
+  const [urls, setUrls] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Search & Filter State with 300ms Debounce
   const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
 
-  // Modal States
+  // Modal Control States
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editingUrl, setEditingUrl] = useState<any | null>(null);
   const [deletingUrl, setDeletingUrl] = useState<any | null>(null);
@@ -30,6 +31,15 @@ export default function DashboardPage() {
   // QR & Copy State
   const [selectedQrUrl, setSelectedQrUrl] = useState<{ url: string; title: string } | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  // Debounce search effect (300ms delay)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [search]);
 
   const fetchUserData = async () => {
     try {
@@ -48,7 +58,7 @@ export default function DashboardPage() {
   const fetchUrls = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/urls?search=${encodeURIComponent(search)}&status=${statusFilter}`);
+      const res = await fetch(`/api/urls?search=${encodeURIComponent(debouncedSearch)}&status=${statusFilter}`);
       const data = await res.json();
       if (data.urls) {
         setUrls(data.urls);
@@ -66,7 +76,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (user) fetchUrls();
-  }, [user, search, statusFilter]);
+  }, [user, debouncedSearch, statusFilter]);
 
   const copyLink = (code: string, id: string) => {
     const full = `${window.location.protocol}//${window.location.host}/${code}`;
@@ -91,7 +101,7 @@ export default function DashboardPage() {
           onCreateClick={() => setIsCreateOpen(true)}
         />
 
-        {/* Modular Technical KPI Cards */}
+        {/* Modular KPI Metrics Cards */}
         <DashboardKpiCards
           user={user}
           urls={urls}
@@ -100,7 +110,7 @@ export default function DashboardPage() {
           expiredCount={expiredCount}
         />
 
-        {/* Modular Search & Filter Toolbar */}
+        {/* Search & Filter Toolbar with 300ms Debounce */}
         <DashboardToolbar
           search={search}
           onSearchChange={setSearch}
@@ -109,31 +119,29 @@ export default function DashboardPage() {
           onRefresh={fetchUrls}
         />
 
-        {/* Modular Data Table */}
+        {/* Expanded Multi-Column Table Layout */}
         <DashboardTable
           urls={urls}
           loading={loading}
           search={search}
           copiedId={copiedId}
           onCopy={copyLink}
-          onEdit={setEditingUrl}
-          onDelete={setDeletingUrl}
-          onToggleStatus={setTogglingUrl}
-          onSelectQr={setSelectedQrUrl}
+          onEdit={(u) => setEditingUrl(u)}
+          onDelete={(u) => setDeletingUrl(u)}
+          onToggleStatus={(u) => setTogglingUrl(u)}
+          onSelectQr={(qr) => setSelectedQrUrl(qr)}
           onCreateClick={() => setIsCreateOpen(true)}
         />
       </div>
 
-      {/* Modular Modals */}
+      {/* Create Link Modal */}
       <CreateUrlModal
         isOpen={isCreateOpen}
         onClose={() => setIsCreateOpen(false)}
-        onSuccess={() => {
-          fetchUrls();
-          fetchUserData();
-        }}
+        onSuccess={fetchUrls}
       />
 
+      {/* Edit Link Modal */}
       <EditUrlModal
         isOpen={!!editingUrl}
         urlItem={editingUrl}
@@ -141,29 +149,27 @@ export default function DashboardPage() {
         onSuccess={fetchUrls}
       />
 
+      {/* Delete Link Modal */}
+      <DeleteUrlModal
+        urlItem={deletingUrl}
+        onClose={() => setDeletingUrl(null)}
+        onSuccess={fetchUrls}
+      />
+
+      {/* Toggle Status Confirmation Modal */}
       <ToggleStatusModal
         urlItem={togglingUrl}
         onClose={() => setTogglingUrl(null)}
         onSuccess={fetchUrls}
       />
 
-      <DeleteUrlModal
-        urlItem={deletingUrl}
-        onClose={() => setDeletingUrl(null)}
-        onSuccess={() => {
-          fetchUrls();
-          fetchUserData();
-        }}
+      {/* QR Code Viewer Asset Modal */}
+      <QRCodeModal
+        isOpen={!!selectedQrUrl}
+        shortUrl={selectedQrUrl?.url || ''}
+        title={selectedQrUrl?.title || ''}
+        onClose={() => setSelectedQrUrl(null)}
       />
-
-      {selectedQrUrl && (
-        <QRCodeModal
-          isOpen={!!selectedQrUrl}
-          onClose={() => setSelectedQrUrl(null)}
-          shortUrl={selectedQrUrl.url}
-          title={selectedQrUrl.title}
-        />
-      )}
     </div>
   );
 }
