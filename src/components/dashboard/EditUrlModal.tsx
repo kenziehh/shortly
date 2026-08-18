@@ -29,6 +29,14 @@ interface EditUrlModalProps {
   onSuccess: () => void;
 }
 
+const formatLocalDatetime = (dateInput: Date | string) => {
+  if (!dateInput) return '';
+  const d = new Date(dateInput);
+  if (isNaN(d.getTime())) return '';
+  const tzOffset = d.getTimezoneOffset() * 60000;
+  return new Date(d.getTime() - tzOffset).toISOString().slice(0, 16);
+};
+
 export default function EditUrlModal({ isOpen, urlItem, onClose, onSuccess }: EditUrlModalProps) {
   const [loading, setLoading] = useState(false);
 
@@ -69,7 +77,7 @@ export default function EditUrlModal({ isOpen, urlItem, onClose, onSuccess }: Ed
         customAlias: urlItem.customAlias || '',
         password: '',
         maxClicks: urlItem.maxClicks ? String(urlItem.maxClicks) : '',
-        expiresAt: urlItem.expiresAt ? new Date(urlItem.expiresAt).toISOString().slice(0, 16) : '',
+        expiresAt: urlItem.expiresAt ? formatLocalDatetime(urlItem.expiresAt) : '',
       });
     }
   }, [urlItem, form]);
