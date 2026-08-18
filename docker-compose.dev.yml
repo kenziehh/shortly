@@ -1,7 +1,7 @@
 services:
   db:
     image: postgres:16-alpine
-    container_name: simpul_db_dev
+    container_name: shortly_db_dev
     restart: always
     environment:
       POSTGRES_USER: postgres
@@ -21,13 +21,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.dev
-    container_name: simpul_web_dev
+    container_name: shortly_web_dev
     restart: always
     ports:
       - "3000:3000"
     environment:
       DATABASE_URL: "postgresql://postgres:postgrespassword@db:5432/url_shortener?schema=public"
-      JWT_SECRET: "swiftlink-simpul-dev-secret-key-2026"
+      JWT_SECRET: "shortly-dev-secret-key-2026"
       NODE_ENV: "development"
     volumes:
       - .:/app

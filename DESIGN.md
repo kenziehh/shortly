@@ -1,5 +1,5 @@
 ---
-name: Simpul Structural Identity
+name: Shortly Structural Identity
 colors:
   surface: '#f9f9ff'
   surface-dim: '#cbdaff'
@@ -179,4 +179,4 @@ The shape language is primarily **Rectilinear**.
   - Avoid vertical dividers within lists to maintain a clean horizontal flow.
 
 - **Logo Implementation:**
-  - The "Simpul" logomark must be rendered in #1E4FD8. The knotting lines should maintain a consistent stroke weight of 2px.
+  - The "Shortly" logomark must be rendered in #1E4FD8. The knotting lines should maintain a consistent stroke weight of 2px.

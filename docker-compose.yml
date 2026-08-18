@@ -1,7 +1,7 @@
 services:
   db:
     image: postgres:16-alpine
-    container_name: simpul_db_prod
+    container_name: shortly_db_prod
     restart: always
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
@@ -21,13 +21,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: simpul_web_prod
+    container_name: shortly_web_prod
     restart: always
     ports:
       - "3000:3000"
     environment:
       DATABASE_URL: "postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-mysecretpassword}@db:5432/${POSTGRES_DB:-url_shortener}?schema=public"
-      JWT_SECRET: ${JWT_SECRET:-swiftlink-simpul-production-secret-key-2026}
+      JWT_SECRET: ${JWT_SECRET:-shortly-production-secret-key-2026}
       NODE_ENV: "production"
     depends_on:
       db:
