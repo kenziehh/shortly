@@ -37,7 +37,7 @@ export async function PATCH(
     const body = await req.json();
 
     let validatedData: any = body;
-    if (body.originalUrl) {
+    if (body.originalUrl || body.title !== undefined || body.password !== undefined || body.removePassword || body.customAlias !== undefined) {
       validatedData = editUrlSchema.parse(body);
     }
     if (body.isActive !== undefined) {
@@ -47,6 +47,9 @@ export async function PATCH(
     const updated = await UrlService.updateUrl(id, session.userId, validatedData);
     return NextResponse.json({ success: true, url: updated });
   } catch (err: any) {
+    if (err.errors) {
+      return NextResponse.json({ error: err.errors[0]?.message || 'Invalid form input.' }, { status: 400 });
+    }
     return NextResponse.json(
       { error: err.message || 'Failed to update short link.' },
       { status: 400 }

@@ -98,14 +98,17 @@ export default function DashboardTable({
               const isExpired = u.expiresAt && new Date(u.expiresAt) <= new Date();
               const isMaxReached = u.maxClicks && u.clickCount >= u.maxClicks;
               const isLinkActive = u.isActive && !isExpired && !isMaxReached;
-              const shortUrl = `${window.location.protocol}//${window.location.host}/${u.shortCode}`;
+
+              // Always prefer customAlias over random shortCode if customAlias exists!
+              const displaySlug = u.customAlias || u.shortCode;
+              const shortUrl = `${window.location.protocol}//${window.location.host}/${displaySlug}`;
 
               return (
                 <tr key={u.id} className="hover:bg-[#f8fafc]/80 transition-colors group">
-                  {/* Title & Short Code */}
+                  {/* Title & Custom Slug */}
                   <td className="py-4 px-6 space-y-1">
                     <div className="font-heading font-semibold text-foreground text-base flex items-center gap-2">
-                      <span>{u.title || u.shortCode}</span>
+                      <span>{u.title || displaySlug}</span>
                       {u.password && (
                         <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-amber-50 text-amber-700 border border-amber-200 text-xs font-sans font-semibold" title="Password Protected">
                           <Lock className="w-3.5 h-3.5" /> Pass
@@ -114,9 +117,9 @@ export default function DashboardTable({
                     </div>
 
                     <div className="flex items-center gap-2 font-mono text-base text-primary">
-                      <span className="font-bold">/{u.shortCode}</span>
+                      <span className="font-bold">/{displaySlug}</span>
                       <a
-                        href={`/${u.shortCode}`}
+                        href={`/${displaySlug}`}
                         target="_blank"
                         rel="noreferrer"
                         className="text-[#94a3b8] hover:text-primary transition-colors"
@@ -145,7 +148,7 @@ export default function DashboardTable({
                     )}
                   </td>
 
-                  {/* Click Limit Column (Plain Text - NO Badge!) */}
+                  {/* Click Limit Column (Plain Text) */}
                   <td className="py-4 px-6 text-center whitespace-nowrap font-sans text-sm font-medium text-[#0f172a]">
                     {u.maxClicks ? (
                       <span className={isMaxReached ? 'text-amber-700 font-bold' : 'text-[#0f172a]'}>
@@ -161,7 +164,7 @@ export default function DashboardTable({
                     {u.clickCount.toLocaleString()}
                   </td>
 
-                  {/* Pure Active Switch Column (NO active badge!) */}
+                  {/* Pure Active Switch Column */}
                   <td className="py-4 px-6 text-center whitespace-nowrap">
                     <div className="flex items-center justify-center">
                       <Switch
@@ -180,7 +183,7 @@ export default function DashboardTable({
                         <TooltipTrigger asChild>
                           <Button
                             size="icon"
-                            onClick={() => onCopy(u.shortCode, u.id)}
+                            onClick={() => onCopy(displaySlug, u.id)}
                             className="h-9 w-9 rounded-xl bg-slate-800 hover:bg-slate-900 text-white shadow-xs transition-all cursor-pointer"
                           >
                             {copiedId === u.id ? <Check className="w-4.5 h-4.5 text-emerald-400" /> : <Copy className="w-4.5 h-4.5" />}
@@ -208,7 +211,7 @@ export default function DashboardTable({
                         <TooltipTrigger asChild>
                           <Button
                             size="icon"
-                            onClick={() => onSelectQr({ url: shortUrl, title: u.title || u.shortCode })}
+                            onClick={() => onSelectQr({ url: shortUrl, title: u.title || displaySlug })}
                             className="h-9 w-9 rounded-xl bg-purple-600 hover:bg-purple-700 text-white shadow-xs transition-all cursor-pointer"
                           >
                             <QrCode className="w-4.5 h-4.5" />

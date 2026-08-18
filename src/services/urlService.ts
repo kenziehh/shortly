@@ -27,7 +27,7 @@ export class UrlService {
 
     // 2. Custom Alias Sanitization & Conflict Check
     let customAliasClean: string | undefined = undefined;
-    if (input.customAlias) {
+    if (input.customAlias && input.customAlias.trim().length > 0) {
       customAliasClean = input.customAlias.trim().toLowerCase().replace(/\//g, '').replace(/[^a-z0-9_-]/g, '');
 
       if (customAliasClean) {
@@ -162,7 +162,16 @@ export class UrlService {
   /**
    * Update Short URL Details
    */
-  static async updateUrl(urlId: string, userId: string, input: EditUrlFormValues & { isActive?: boolean }) {
+  static async updateUrl(
+    urlId: string,
+    userId: string,
+    input: EditUrlFormValues & {
+      isActive?: boolean;
+      removePassword?: boolean;
+      removeMaxClicks?: boolean;
+      removeExpiresAt?: boolean;
+    }
+  ) {
     const existing = await prisma.url.findFirst({
       where: { id: urlId, userId },
     });
@@ -176,11 +185,35 @@ export class UrlService {
     if (input.title !== undefined) updateData.title = input.title || null;
     if (input.originalUrl !== undefined) updateData.originalUrl = input.originalUrl;
     if (input.isActive !== undefined) updateData.isActive = input.isActive;
-    if (input.maxClicks !== undefined) updateData.maxClicks = input.maxClicks ? parseInt(String(input.maxClicks), 10) : null;
-    if (input.expiresAt !== undefined) updateData.expiresAt = input.expiresAt ? new Date(input.expiresAt) : null;
 
+    // Handle Max Clicks Removal or Update
+    if (input.removeMaxClicks) {
+      updateData.maxClicks = null;
+    } else if (input.maxClicks !== undefined) {
+      updateData.maxClicks = input.maxClicks && String(input.maxClicks).trim().length > 0
+        ? parseInt(String(input.maxClicks), 10)
+        : null;
+    }
+
+    // Handle Expiration Date Removal or Update
+    if (input.removeExpiresAt) {
+      updateData.expiresAt = null;
+    } else if (input.expiresAt !== undefined) {
+      updateData.expiresAt = input.expiresAt && String(input.expiresAt).trim().length > 0
+        ? new Date(input.expiresAt)
+        : null;
+    }
+
+    // Handle Password Update or Password Removal
+    if (input.removePassword) {
+      updateData.password = null;
+    } else if (input.password && typeof input.password === 'string' && input.password.trim().length > 0) {
+      updateData.password = await hashPassword(input.password);
+    }
+
+    // Handle Custom Alias Update or Clearing
     if (input.customAlias !== undefined) {
-      const cleanAlias = input.customAlias
+      const cleanAlias = input.customAlias && typeof input.customAlias === 'string' && input.customAlias.trim().length > 0
         ? input.customAlias.trim().toLowerCase().replace(/\//g, '').replace(/[^a-z0-9_-]/g, '')
         : null;
 
@@ -200,10 +233,6 @@ export class UrlService {
         }
       }
       updateData.customAlias = cleanAlias;
-    }
-
-    if (input.password !== undefined && input.password.trim().length > 0) {
-      updateData.password = await hashPassword(input.password);
     }
 
     return prisma.url.update({

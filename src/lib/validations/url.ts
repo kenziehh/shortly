@@ -78,7 +78,9 @@ export const editUrlSchema = z.object({
       (val) => !val || (!isNaN(Number(val)) && Number(val) >= 1),
       { message: 'Max clicks must be a positive number.' }
     ),
+  removeMaxClicks: z.boolean().optional(),
   expiresAt: z.string().optional(),
+  removeExpiresAt: z.boolean().optional(),
 });
 
 export type EditUrlFormValues = z.infer<typeof editUrlSchema>;

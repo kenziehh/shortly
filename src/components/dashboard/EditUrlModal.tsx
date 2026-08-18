@@ -31,6 +31,12 @@ interface EditUrlModalProps {
 
 export default function EditUrlModal({ isOpen, urlItem, onClose, onSuccess }: EditUrlModalProps) {
   const [loading, setLoading] = useState(false);
+
+  // Removal Checkboxes State
+  const [removePassword, setRemovePassword] = useState(false);
+  const [removeMaxClicks, setRemoveMaxClicks] = useState(false);
+  const [removeExpiresAt, setRemoveExpiresAt] = useState(false);
+
   const [domainHost, setDomainHost] = useState('shortly.to');
 
   useEffect(() => {
@@ -53,6 +59,10 @@ export default function EditUrlModal({ isOpen, urlItem, onClose, onSuccess }: Ed
 
   useEffect(() => {
     if (urlItem) {
+      setRemovePassword(false);
+      setRemoveMaxClicks(false);
+      setRemoveExpiresAt(false);
+
       form.reset({
         title: urlItem.title || '',
         originalUrl: urlItem.originalUrl || '',
@@ -73,21 +83,28 @@ export default function EditUrlModal({ isOpen, urlItem, onClose, onSuccess }: Ed
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          title: values.title || undefined,
+          title: values.title || '',
           originalUrl: values.originalUrl,
-          customAlias: values.customAlias || undefined,
-          password: values.password || undefined,
-          maxClicks: values.maxClicks ? parseInt(values.maxClicks, 10) : null,
-          expiresAt: values.expiresAt || null,
+          customAlias: values.customAlias || '',
+          password: values.password || '',
+          removePassword: removePassword,
+          maxClicks: removeMaxClicks ? '' : values.maxClicks || '',
+          removeMaxClicks: removeMaxClicks,
+          expiresAt: removeExpiresAt ? '' : values.expiresAt || '',
+          removeExpiresAt: removeExpiresAt,
         }),
       });
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.error || 'Failed to update short link.');
+        let msg = data.error || 'Failed to update short link.';
+        if (Array.isArray(data.details)) {
+          msg = data.details[0]?.message || msg;
+        }
+        throw new Error(msg);
       }
 
-      toast.success('Short link settings updated.');
+      toast.success('Short link settings updated successfully!');
       onClose();
       onSuccess();
     } catch (err: any) {
@@ -96,6 +113,8 @@ export default function EditUrlModal({ isOpen, urlItem, onClose, onSuccess }: Ed
       setLoading(false);
     }
   };
+
+  const hasAnyActiveRules = urlItem?.password || urlItem?.maxClicks || urlItem?.expiresAt;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -143,7 +162,7 @@ export default function EditUrlModal({ isOpen, urlItem, onClose, onSuccess }: Ed
                     <Input
                       {...field}
                       type="url"
-                      placeholder="https://mybrand.com/long-landing-page"
+                      placeholder="https://example.com/very-long-url"
                       className="h-10 rounded-xl text-sm font-mono border-[#e2e8f0]"
                     />
                   </FormControl>
@@ -162,7 +181,7 @@ export default function EditUrlModal({ isOpen, urlItem, onClose, onSuccess }: Ed
                     Custom Slug (optional)
                   </FormLabel>
                   <FormControl>
-                    <div className="flex items-center rounded-xl border border-[#e2e8f0] overflow-hidden focus-within:border-[#0038b1]">
+                    <div className="flex items-center rounded-xl border border-[#e2e8f0] overflow-hidden focus-within:border-primary">
                       <span className="px-3.5 py-2.5 bg-[#f8fafc] border-r border-[#e2e8f0] text-sm font-mono text-[#64748b] shrink-0 font-semibold select-none">
                         {domainHost}/
                       </span>
@@ -197,8 +216,9 @@ export default function EditUrlModal({ isOpen, urlItem, onClose, onSuccess }: Ed
                       <Input
                         {...field}
                         type="password"
-                        placeholder="••••••••"
+                        placeholder={urlItem?.password ? "•••••••• (Encrypted)" : "••••••••"}
                         className="h-10 rounded-xl text-sm font-mono border-[#e2e8f0]"
+                        disabled={removePassword}
                       />
                     </FormControl>
                     <FormMessage />
@@ -220,6 +240,7 @@ export default function EditUrlModal({ isOpen, urlItem, onClose, onSuccess }: Ed
                         type="number"
                         placeholder="e.g. 1000"
                         className="h-10 rounded-xl text-sm font-mono border-[#e2e8f0]"
+                        disabled={removeMaxClicks}
                       />
                     </FormControl>
                     <FormMessage />
@@ -228,6 +249,7 @@ export default function EditUrlModal({ isOpen, urlItem, onClose, onSuccess }: Ed
               />
             </div>
 
+            {/* Expiration Date Field */}
             <FormField
               control={form.control}
               name="expiresAt"
@@ -241,6 +263,7 @@ export default function EditUrlModal({ isOpen, urlItem, onClose, onSuccess }: Ed
                       {...field}
                       type="datetime-local"
                       className="h-10 rounded-xl text-sm font-mono border-[#e2e8f0]"
+                      disabled={removeExpiresAt}
                     />
                   </FormControl>
                   <FormMessage />
@@ -248,22 +271,78 @@ export default function EditUrlModal({ isOpen, urlItem, onClose, onSuccess }: Ed
               )}
             />
 
-            {/* Action Buttons */}
-            <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#f1f5f9]">
+            {/* Removal Checkboxes Grid (Placed at the very bottom, below Expiration Date) */}
+            {hasAnyActiveRules && (
+              <div className="space-y-2 pt-2">
+                <div className="text-xs font-bold uppercase text-[#64748b] tracking-wider">
+                  Active Restrictions & Removal
+                </div>
+
+                {/* Remove Password Checkbox */}
+                {urlItem?.password && (
+                  <div className="flex items-center gap-2 bg-amber-50/60 p-2.5 rounded-xl border border-amber-200">
+                    <input
+                      type="checkbox"
+                      id="removePassCheck"
+                      checked={removePassword}
+                      onChange={(e) => setRemovePassword(e.target.checked)}
+                      className="w-4 h-4 rounded border-amber-300 text-rose-600 focus:ring-rose-500 cursor-pointer"
+                    />
+                    <label htmlFor="removePassCheck" className="text-xs font-semibold text-rose-700 cursor-pointer select-none">
+                      Remove existing password protection
+                    </label>
+                  </div>
+                )}
+
+                {/* Remove Click Limit Checkbox */}
+                {urlItem?.maxClicks && (
+                  <div className="flex items-center gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                    <input
+                      type="checkbox"
+                      id="removeClicksCheck"
+                      checked={removeMaxClicks}
+                      onChange={(e) => setRemoveMaxClicks(e.target.checked)}
+                      className="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary cursor-pointer"
+                    />
+                    <label htmlFor="removeClicksCheck" className="text-xs font-semibold text-slate-700 cursor-pointer select-none">
+                      Remove click limit (set to Unlimited)
+                    </label>
+                  </div>
+                )}
+
+                {/* Remove Expiration Date Checkbox */}
+                {urlItem?.expiresAt && (
+                  <div className="flex items-center gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-200">
+                    <input
+                      type="checkbox"
+                      id="removeExpiresCheck"
+                      checked={removeExpiresAt}
+                      onChange={(e) => setRemoveExpiresAt(e.target.checked)}
+                      className="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary cursor-pointer"
+                    />
+                    <label htmlFor="removeExpiresCheck" className="text-xs font-semibold text-slate-700 cursor-pointer select-none">
+                      Remove expiration date (set to No Expiration)
+                    </label>
+                  </div>
+                )}
+              </div>
+            )}
+
+            <div className="flex items-center justify-end gap-3 pt-3 border-t border-[#f1f5f9]">
               <Button
                 type="button"
                 variant="outline"
                 onClick={onClose}
-                className="h-10 px-4 rounded-xl border-[#e2e8f0] text-sm font-semibold text-[#0f172a] hover:bg-[#f8fafc] cursor-pointer"
+                className="h-10 px-5 rounded-xl border-[#e2e8f0] text-sm font-semibold text-[#0f172a] hover:bg-[#f8fafc] cursor-pointer"
               >
                 Cancel
               </Button>
               <Button
                 type="submit"
                 disabled={loading}
-                className="h-10 px-5 rounded-xl bg-[#0038b1] hover:bg-[#00257e] text-white text-sm font-semibold cursor-pointer"
+                className="h-10 px-5 rounded-xl bg-primary hover:bg-primary-hover text-white text-sm font-semibold cursor-pointer"
               >
-                {loading ? 'Saving...' : 'Save changes'}
+                {loading ? 'Saving...' : 'Save Changes'}
               </Button>
             </div>
           </form>
