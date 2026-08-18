@@ -1,25 +1,17 @@
 import { NextResponse } from 'next/server';
 import { getSessionUser } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
+import { AuthService } from '@/services/authService';
 
 export async function GET() {
   try {
-    const user = await getSessionUser();
-    if (!user) {
+    const session = await getSessionUser();
+    if (!session) {
       return NextResponse.json({ user: null }, { status: 200 });
     }
 
-    const urlCount = await prisma.url.count({
-      where: { userId: user.id },
-    });
-
-    return NextResponse.json({
-      user: {
-        ...user,
-        urlCount,
-      },
-    });
-  } catch (error: any) {
-    return NextResponse.json({ user: null }, { status: 200 });
+    const user = await AuthService.getCurrentUser(session.userId);
+    return NextResponse.json({ user });
+  } catch (err: any) {
+    return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
