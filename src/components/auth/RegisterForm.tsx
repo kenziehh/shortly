@@ -62,7 +62,7 @@ export default function RegisterForm() {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-sm font-mono font-semibold uppercase text-[#091b38] tracking-wider">
+              <FormLabel className="text-sm font-sans font-semibold uppercase text-foreground tracking-wider">
                 FULL NAME
               </FormLabel>
               <FormControl>
@@ -72,7 +72,7 @@ export default function RegisterForm() {
                     {...field}
                     type="text"
                     placeholder="Alex Morgan"
-                    className="input-glass w-full h-[56px] pl-[48px] pr-4 rounded-xl text-base text-[#091b38] outline-none"
+                    className="input-glass w-full h-[56px] pl-[48px] pr-4 rounded-xl text-base text-foreground outline-none"
                   />
                 </div>
               </FormControl>
@@ -87,7 +87,7 @@ export default function RegisterForm() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-sm font-mono font-semibold uppercase text-[#091b38] tracking-wider">
+              <FormLabel className="text-sm font-sans font-semibold uppercase text-foreground tracking-wider">
                 EMAIL ADDRESS
               </FormLabel>
               <FormControl>
@@ -97,7 +97,7 @@ export default function RegisterForm() {
                     {...field}
                     type="email"
                     placeholder="alex@company.com"
-                    className="input-glass w-full h-[56px] pl-[48px] pr-4 rounded-xl text-base text-[#091b38] outline-none"
+                    className="input-glass w-full h-[56px] pl-[48px] pr-4 rounded-xl text-base text-foreground outline-none"
                   />
                 </div>
               </FormControl>
@@ -112,7 +112,7 @@ export default function RegisterForm() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-sm font-mono font-semibold uppercase text-[#091b38] tracking-wider">
+              <FormLabel className="text-sm font-sans font-semibold uppercase text-[#091b38] tracking-wider">
                 PASSWORD
               </FormLabel>
               <FormControl>
@@ -122,7 +122,7 @@ export default function RegisterForm() {
                     {...field}
                     type="password"
                     placeholder="At least 6 characters"
-                    className="input-glass w-full h-[56px] pl-[48px] pr-4 rounded-xl text-base text-[#091b38] outline-none"
+                    className="input-glass w-full h-[56px] pl-[48px] pr-4 rounded-xl text-base text-foreground outline-none"
                   />
                 </div>
               </FormControl>
@@ -134,7 +134,7 @@ export default function RegisterForm() {
         <Button
           type="submit"
           disabled={loading}
-          className="w-full h-[56px] rounded-xl bg-[#0038b1] hover:bg-[#00257e] text-white font-semibold text-lg shadow-lg shadow-[#0038b1]/20 transition-all hover:scale-[0.98] flex items-center justify-center gap-2 mt-2 cursor-pointer"
+          className="w-full h-[56px] rounded-xl bg-primary hover:bg-primary-hover text-white font-semibold text-lg shadow-lg shadow-primary/20 transition-all hover:scale-[0.98] flex items-center justify-center gap-2 mt-2 cursor-pointer"
         >
           {loading ? 'Creating account...' : 'Create Free Account'}
           {!loading && <ArrowRight className="w-5 h-5" />}

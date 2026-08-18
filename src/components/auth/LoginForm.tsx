@@ -64,7 +64,7 @@ function LoginFormContent() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-sm font-mono font-semibold uppercase text-[#091b38] tracking-wider">
+              <FormLabel className="text-sm font-sans font-semibold uppercase text-foreground tracking-wider">
                 EMAIL ADDRESS
               </FormLabel>
               <FormControl>
@@ -74,7 +74,7 @@ function LoginFormContent() {
                     {...field}
                     type="email"
                     placeholder="alex@company.com"
-                    className="input-glass w-full h-[56px] pl-[48px] pr-4 rounded-xl text-base text-[#091b38] outline-none"
+                    className="input-glass w-full h-[56px] pl-[48px] pr-4 rounded-xl text-base text-foreground outline-none"
                   />
                 </div>
               </FormControl>
@@ -89,7 +89,7 @@ function LoginFormContent() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel className="text-sm font-mono font-semibold uppercase text-[#091b38] tracking-wider">
+              <FormLabel className="text-sm font-sans font-semibold uppercase text-foreground tracking-wider">
                 PASSWORD
               </FormLabel>
               <FormControl>
@@ -99,7 +99,7 @@ function LoginFormContent() {
                     {...field}
                     type="password"
                     placeholder="••••••••"
-                    className="input-glass w-full h-[56px] pl-[48px] pr-4 rounded-xl text-base text-[#091b38] outline-none"
+                    className="input-glass w-full h-[56px] pl-[48px] pr-4 rounded-xl text-base text-foreground outline-none"
                   />
                 </div>
               </FormControl>
@@ -111,7 +111,7 @@ function LoginFormContent() {
         <Button
           type="submit"
           disabled={loading}
-          className="w-full h-[56px] rounded-xl bg-[#0038b1] hover:bg-[#00257e] text-white font-semibold text-lg shadow-lg shadow-[#0038b1]/20 transition-all hover:scale-[0.98] flex items-center justify-center gap-2 mt-2 cursor-pointer"
+          className="w-full h-[56px] rounded-xl bg-primary hover:bg-primary-hover text-white font-semibold text-lg shadow-lg shadow-primary/20 transition-all hover:scale-[0.98] flex items-center justify-center gap-2 mt-2 cursor-pointer"
         >
           {loading ? 'Signing in...' : 'Sign In to Dashboard'}
           {!loading && <ArrowRight className="w-5 h-5" />}
@@ -123,7 +123,7 @@ function LoginFormContent() {
 
 export default function LoginForm() {
   return (
-    <Suspense fallback={<div className="py-6 text-center text-sm font-mono text-[#5b5e68]">Loading form...</div>}>
+    <Suspense fallback={<div className="py-6 text-center text-sm font-sans text-muted-foreground">Loading form...</div>}>
       <LoginFormContent />
     </Suspense>
   );

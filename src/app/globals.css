@@ -1,40 +1,62 @@
 @import "tailwindcss";
 
+@theme {
+  --color-background: #f9f9ff;
+  --color-foreground: #091b38;
+
+  --color-card: #ffffff;
+  --color-card-foreground: #091b38;
+
+  --color-popover: #ffffff;
+  --color-popover-foreground: #091b38;
+
+  --color-primary: #0038b1;
+  --color-primary-hover: #00257e;
+  --color-primary-foreground: #ffffff;
+
+  --color-secondary: #e8edff;
+  --color-secondary-foreground: #091b38;
+
+  --color-muted: #f1f3ff;
+  --color-muted-foreground: #5b5e68;
+
+  --color-accent: #e8edff;
+  --color-accent-foreground: #0038b1;
+
+  --color-destructive: #ba1a1a;
+  --color-destructive-foreground: #ffffff;
+
+  --color-border: #c4c5d6;
+  --color-input: #c4c5d6;
+  --color-ring: #0038b1;
+
+  --font-heading: var(--font-plus-jakarta), var(--font-inter), sans-serif;
+  --font-body: var(--font-inter), sans-serif;
+  --font-mono: var(--font-poppins), sans-serif;
+}
+
 @layer base {
   :root {
     --background: #f9f9ff;
     --foreground: #091b38;
-
     --card: #ffffff;
     --card-foreground: #091b38;
-
     --popover: #ffffff;
     --popover-foreground: #091b38;
-
     --primary: #0038b1;
     --primary-foreground: #ffffff;
-
     --secondary: #e8edff;
     --secondary-foreground: #091b38;
-
     --muted: #f1f3ff;
     --muted-foreground: #5b5e68;
-
     --accent: #e8edff;
     --accent-foreground: #0038b1;
-
     --destructive: #ba1a1a;
     --destructive-foreground: #ffffff;
-
     --border: #c4c5d6;
     --input: #c4c5d6;
     --ring: #0038b1;
-
     --radius: 0.5rem;
-
-    --font-heading: var(--font-plus-jakarta), var(--font-inter), sans-serif;
-    --font-body: var(--font-inter), sans-serif;
-    --font-mono: var(--font-jetbrains), monospace;
   }
 }
 
@@ -42,8 +64,8 @@ body {
   background-color: var(--background);
   color: var(--foreground);
   font-family: var(--font-body);
-  font-size: 15px;
-  line-height: 1.6;
+  font-size: 16px;
+  line-height: 1.7;
   margin: 0;
   padding: 0;
   -webkit-font-smoothing: antialiased;

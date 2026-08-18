@@ -16,63 +16,63 @@ export default function DashboardKpiCards({
   expiredCount,
 }: DashboardKpiCardsProps) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
       {/* Card 1: Total Links */}
-      <div className="bg-white border border-[#e2e8f0] rounded-xl p-5 shadow-xs space-y-2">
-        <div className="flex items-center justify-between text-[#64748b] font-mono text-xs uppercase tracking-wider font-semibold">
-          <span>Total Links</span>
-          <div className="p-2 bg-[#f1f5f9] rounded-md text-[#0038b1]">
-            <Layers className="w-4 h-4" />
+      <div className="bg-white border border-[#e2e8f0] rounded-2xl p-7 shadow-xs space-y-3">
+        <div className="flex items-center justify-between text-[#475569] font-sans text-lg font-semibold">
+          <span>Total links</span>
+          <div className="p-3 bg-[#f1f5f9] rounded-xl text-primary">
+            <Layers className="w-6 h-6" />
           </div>
         </div>
-        <div className="font-mono text-3xl font-bold text-[#0f172a]">
+        <div className="font-heading text-5xl font-extrabold text-foreground tracking-tight">
           {user?.urlCount || urls.length}
         </div>
-        <div className="text-xs font-mono text-[#64748b]">
-          Limit: <span className="font-semibold text-[#0f172a]">{user?.maxUrlLimit || 50} total</span>
+        <div className="text-base font-sans text-[#64748b]">
+          Limit: <span className="font-bold text-foreground">{user?.maxUrlLimit || 50} total</span>
         </div>
       </div>
 
       {/* Card 2: Total Engagements */}
-      <div className="bg-white border border-[#e2e8f0] rounded-xl p-5 shadow-xs space-y-2">
-        <div className="flex items-center justify-between text-[#64748b] font-mono text-xs uppercase tracking-wider font-semibold">
-          <span>Total Engagements</span>
-          <div className="p-2 bg-[#f1f5f9] rounded-md text-[#0038b1]">
-            <Sparkles className="w-4 h-4" />
+      <div className="bg-white border border-[#e2e8f0] rounded-2xl p-7 shadow-xs space-y-3">
+        <div className="flex items-center justify-between text-[#475569] font-sans text-lg font-semibold">
+          <span>Total engagements</span>
+          <div className="p-3 bg-[#f1f5f9] rounded-xl text-primary">
+            <Sparkles className="w-6 h-6" />
           </div>
         </div>
-        <div className="font-mono text-3xl font-bold text-[#0f172a]">
+        <div className="font-heading text-5xl font-extrabold text-foreground tracking-tight">
           {totalClicks.toLocaleString()}
         </div>
-        <div className="text-xs font-mono text-[#64748b]">Total click events</div>
+        <div className="text-base font-sans text-[#64748b]">Total click events</div>
       </div>
 
       {/* Card 3: Active Routing */}
-      <div className="bg-white border border-[#e2e8f0] rounded-xl p-5 shadow-xs space-y-2">
-        <div className="flex items-center justify-between text-[#64748b] font-mono text-xs uppercase tracking-wider font-semibold">
-          <span>Active Routing</span>
-          <div className="p-2 bg-emerald-50 rounded-md text-emerald-600">
-            <ShieldCheck className="w-4 h-4" />
+      <div className="bg-white border border-[#e2e8f0] rounded-2xl p-7 shadow-xs space-y-3">
+        <div className="flex items-center justify-between text-[#475569] font-sans text-lg font-semibold">
+          <span>Active routing</span>
+          <div className="p-3 bg-emerald-50 rounded-xl text-emerald-600">
+            <ShieldCheck className="w-6 h-6" />
           </div>
         </div>
-        <div className="font-mono text-3xl font-bold text-emerald-600">
+        <div className="font-heading text-5xl font-extrabold text-emerald-600 tracking-tight">
           {activeCount}
         </div>
-        <div className="text-xs font-mono text-[#64748b]">Live redirect rules</div>
+        <div className="text-base font-sans text-[#64748b]">Live redirect rules</div>
       </div>
 
       {/* Card 4: Expired / Inactive */}
-      <div className="bg-white border border-[#e2e8f0] rounded-xl p-5 shadow-xs space-y-2">
-        <div className="flex items-center justify-between text-[#64748b] font-mono text-xs uppercase tracking-wider font-semibold">
+      <div className="bg-white border border-[#e2e8f0] rounded-2xl p-7 shadow-xs space-y-3">
+        <div className="flex items-center justify-between text-[#475569] font-sans text-lg font-semibold">
           <span>Expired / Inactive</span>
-          <div className="p-2 bg-rose-50 rounded-md text-rose-600">
-            <Clock className="w-4 h-4" />
+          <div className="p-3 bg-rose-50 rounded-xl text-rose-600">
+            <Clock className="w-6 h-6" />
           </div>
         </div>
-        <div className="font-mono text-3xl font-bold text-rose-600">
+        <div className="font-heading text-5xl font-extrabold text-rose-600 tracking-tight">
           {expiredCount}
         </div>
-        <div className="text-xs font-mono text-[#64748b]">Deactivated or expired</div>
+        <div className="text-base font-sans text-[#64748b]">Deactivated or expired</div>
       </div>
     </div>
   );

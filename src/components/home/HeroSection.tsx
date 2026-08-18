@@ -99,58 +99,59 @@ export default function HeroSection() {
 
   return (
     <section className="text-center mt-6 md:mt-12 flex flex-col items-center">
-      <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#e8edff] border border-[#c4c5d6]/50 text-xs font-mono font-bold text-[#0038b1] mb-6">
-        <Sparkles className="w-3.5 h-3.5" /> High-Performance Precision Link Management
+      {/* Prominent High-Performance Badge */}
+      <div className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full bg-[#e8edff] border border-[#c4c5d6]/50 text-sm md:text-base font-sans font-bold text-primary mb-6 shadow-xs">
+        <Sparkles className="w-4 h-4 text-primary" /> High-Performance Precision Link Management
       </div>
 
-      <h1 className="font-heading text-4xl sm:text-6xl md:text-7xl font-extrabold text-[#091b38] tracking-tight leading-[1.1] mb-6 max-w-4xl">
+      <h1 className="font-heading text-5xl sm:text-6xl md:text-7xl font-extrabold text-[#091b38] tracking-tight leading-[1.1] mb-6 max-w-4xl">
         Short links. <br className="hidden md:inline" />
-        <span className="text-[#0038b1]">Clear insights.</span>
+        <span className="text-primary">Clear insights.</span>
       </h1>
 
-      <p className="text-lg md:text-xl text-[#444654] max-w-2xl leading-relaxed mb-10">
+      <p className="text-xl md:text-2xl text-[#444654] max-w-3xl leading-relaxed mb-10 font-sans">
         The premium link management platform for modern teams. Transform long URLs into trackable, branded assets in seconds.
       </p>
 
       {/* URL Shortener Glass Interaction Component */}
-      <div className="glass-panel rounded-2xl p-4 md:p-6 w-full max-w-4xl mx-auto flex flex-col gap-4 relative z-10">
+      <div className="glass-panel rounded-3xl p-6 md:p-8 w-full max-w-4xl mx-auto flex flex-col gap-5 relative z-10">
         {createdUrl ? (
-          <div className="bg-[#e8edff] border border-[#c4c5d6]/50 p-5 rounded-xl space-y-3">
-            <div className="flex items-center justify-between text-xs text-emerald-700 font-bold font-mono">
-              <span className="flex items-center gap-1.5">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600" /> SHORTENED URL CREATED
+          <div className="bg-[#e8edff] border border-[#c4c5d6]/50 p-6 rounded-2xl space-y-4">
+            <div className="flex items-center justify-between text-sm text-emerald-700 font-bold font-sans">
+              <span className="flex items-center gap-2">
+                <CheckCircle2 className="w-5 h-5 text-emerald-600" /> SHORTENED URL CREATED
               </span>
-              <span>/{createdUrl.shortCode}</span>
+              <span className="font-mono">/{createdUrl.shortCode}</span>
             </div>
 
-            <div className="p-3 bg-white border border-[#c4c5d6]/40 font-mono text-sm text-[#0038b1] font-bold truncate rounded-lg">
+            <div className="p-4 bg-white border border-[#c4c5d6]/40 font-mono text-base text-primary font-bold truncate rounded-xl">
               {getFullShortUrl(createdUrl.shortCode)}
             </div>
 
-            <div className="flex gap-2">
+            <div className="flex gap-3">
               <Button
                 onClick={() => copyToClipboard(getFullShortUrl(createdUrl.shortCode))}
-                size="sm"
-                className="flex-1 bg-[#0038b1] hover:bg-[#00257e] text-white gap-2"
+                size="lg"
+                className="flex-1 bg-primary hover:bg-primary-hover text-white gap-2 text-base font-semibold rounded-xl"
               >
-                {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                {copied ? <Check className="w-5 h-5 text-emerald-400" /> : <Copy className="w-5 h-5" />}
                 {copied ? 'Copied!' : 'Copy Link'}
               </Button>
 
               <Button
                 onClick={() => setQrOpen(true)}
-                size="sm"
+                size="lg"
                 variant="outline"
-                className="bg-white border-[#c4c5d6]/40 text-[#091b38] gap-2"
+                className="bg-white border-[#c4c5d6]/40 text-[#091b38] gap-2 text-base font-semibold rounded-xl"
               >
-                <QrCode className="w-4 h-4 text-[#0038b1]" /> QR Code
+                <QrCode className="w-5 h-5 text-primary" /> QR Code
               </Button>
 
               <Button
                 onClick={() => setCreatedUrl(null)}
-                size="sm"
+                size="lg"
                 variant="ghost"
-                className="text-xs font-mono text-[#5b5e68]"
+                className="text-sm font-sans font-semibold text-[#5b5e68]"
               >
                 + Shorten Another
               </Button>
@@ -166,14 +167,14 @@ export default function HeroSection() {
                   onChange={(e) => setOriginalUrl(e.target.value)}
                   placeholder="Paste your long destination URL (e.g. https://mybrand.com/campaign)..."
                   required
-                  className="h-[56px] pl-4 pr-4 input-glass rounded-xl font-mono text-sm border-[#c4c5d6]/40 text-[#091b38] outline-none"
+                  className="h-[60px] pl-5 pr-5 input-glass rounded-xl font-sans text-base border-[#c4c5d6]/40 text-[#091b38] outline-none"
                 />
               </div>
 
               <Button
                 type="submit"
                 disabled={loading}
-                className="h-[56px] px-8 rounded-xl bg-[#0038b1] hover:bg-[#00257e] text-white font-semibold text-base w-full md:w-auto flex items-center justify-center gap-2 whitespace-nowrap shadow-lg shadow-[#0038b1]/20 transition-all hover:scale-[0.98] cursor-pointer"
+                className="h-[60px] px-8 rounded-xl bg-primary hover:bg-primary-hover text-white font-semibold text-lg w-full md:w-auto flex items-center justify-center gap-2 whitespace-nowrap shadow-lg shadow-primary/20 transition-all hover:scale-[0.98] cursor-pointer"
               >
                 {loading ? 'Processing...' : user ? 'Shorten Link' : 'Login to Shorten'}
                 <ArrowRight className="w-5 h-5" />
@@ -184,25 +185,25 @@ export default function HeroSection() {
               <button
                 type="button"
                 onClick={() => setShowAdvanced(!showAdvanced)}
-                className="text-xs font-mono text-[#0038b1] hover:underline flex items-center gap-1 font-semibold cursor-pointer"
+                className="text-sm font-sans text-primary hover:underline flex items-center gap-1.5 font-semibold cursor-pointer"
               >
-                <Sliders className="w-3.5 h-3.5" />
+                <Sliders className="w-4 h-4" />
                 {showAdvanced ? 'Hide Advanced Options' : '+ Custom Alias, Password, Expiration Date'}
               </button>
 
-              <p className="text-xs text-[#5b5e68]">
-                Press <kbd className="bg-[#e8edff] px-2 py-0.5 rounded font-mono text-[11px] text-[#0038b1]">Enter</kbd> to shorten.
+              <p className="text-sm text-[#5b5e68] font-sans">
+                Press <kbd className="bg-[#e8edff] px-2 py-0.5 rounded font-mono text-xs text-primary font-bold">Enter</kbd> to shorten.
               </p>
             </div>
 
             {showAdvanced && (
-              <div className="p-4 bg-white/80 border border-[#c4c5d6]/40 rounded-xl space-y-3 text-left">
+              <div className="p-5 bg-white/80 border border-[#c4c5d6]/40 rounded-2xl space-y-4 text-left">
                 <div>
-                  <label className="block text-[11px] font-mono font-semibold uppercase text-[#091b38] mb-1">
+                  <label className="block text-xs font-sans font-bold uppercase text-[#091b38] mb-1.5">
                     CUSTOM ALIAS / SLUG (OPTIONAL)
                   </label>
-                  <div className="flex items-center input-glass rounded-xl overflow-hidden focus-within:border-[#0038b1] border border-[#c4c5d6]/40 bg-[#f1f3ff]">
-                    <span className="px-3.5 py-2.5 bg-white/80 border-r border-[#c4c5d6]/40 text-xs font-mono text-[#0038b1] shrink-0 font-bold select-none">
+                  <div className="flex items-center input-glass rounded-xl overflow-hidden focus-within:border-primary border border-[#c4c5d6]/40 bg-[#f1f3ff]">
+                    <span className="px-4 py-3 bg-white/80 border-r border-[#c4c5d6]/40 text-sm font-mono text-primary shrink-0 font-bold select-none">
                       {domainHost}/
                     </span>
                     <input
@@ -213,14 +214,14 @@ export default function HeroSection() {
                         setCustomAlias(cleanVal);
                       }}
                       placeholder="custom-path"
-                      className="w-full h-[44px] px-3 bg-transparent font-mono text-xs text-[#091b38] outline-none border-none"
+                      className="w-full h-[48px] px-4 bg-transparent font-mono text-sm text-[#091b38] outline-none border-none"
                     />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-[11px] font-mono font-semibold uppercase text-[#091b38] mb-1">
+                    <label className="block text-xs font-sans font-bold uppercase text-[#091b38] mb-1.5">
                       PASSWORD (OPTIONAL)
                     </label>
                     <Input
@@ -228,19 +229,19 @@ export default function HeroSection() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••"
-                      className="font-mono text-xs border-[#c4c5d6]/40 bg-[#f1f3ff]"
+                      className="font-sans text-sm h-[44px] border-[#c4c5d6]/40 bg-[#f1f3ff]"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-mono font-semibold uppercase text-[#091b38] mb-1">
+                    <label className="block text-xs font-sans font-bold uppercase text-[#091b38] mb-1.5">
                       EXPIRATION DATE (OPTIONAL)
                     </label>
                     <Input
                       type="datetime-local"
                       value={expiresAt}
                       onChange={(e) => setExpiresAt(e.target.value)}
-                      className="font-mono text-xs border-[#c4c5d6]/40 bg-[#f1f3ff]"
+                      className="font-sans text-sm h-[44px] border-[#c4c5d6]/40 bg-[#f1f3ff]"
                     />
                   </div>
                 </div>

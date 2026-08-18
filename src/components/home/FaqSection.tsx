@@ -30,17 +30,17 @@ export default function FaqSection() {
   ];
 
   return (
-    <section id="faq" className="my-24 scroll-mt-28 max-w-4xl mx-auto w-full">
-      <div className="text-center mb-12 space-y-3">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#e8edff] text-xs font-mono font-bold text-[#0038b1]">
-          <HelpCircle className="w-3.5 h-3.5" /> FREQUENTLY ASKED QUESTIONS
+    <section id="faq" className="my-20 scroll-mt-28 max-w-4xl mx-auto w-full">
+      <div className="text-center mb-10 space-y-3">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#e8edff] text-xs font-sans font-bold text-primary">
+          <HelpCircle className="w-4 h-4" /> FREQUENTLY ASKED QUESTIONS
         </div>
         <h2 className="font-heading text-3xl md:text-4xl font-extrabold text-[#091b38]">
           Got Questions? We Have Answers.
         </h2>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-3.5">
         {faqs.map((faq, idx) => {
           const isOpen = openFaq === idx;
           return (
@@ -50,13 +50,13 @@ export default function FaqSection() {
             >
               <button
                 onClick={() => setOpenFaq(isOpen ? null : idx)}
-                className="w-full p-6 text-left font-heading font-bold text-base md:text-lg text-[#091b38] flex items-center justify-between gap-4 cursor-pointer"
+                className="w-full p-5 text-left font-heading font-bold text-base md:text-lg text-[#091b38] flex items-center justify-between gap-4 cursor-pointer"
               >
                 <span>{faq.q}</span>
-                <ChevronDown className={`w-5 h-5 text-[#0038b1] transition-transform duration-200 shrink-0 ${isOpen ? 'rotate-180' : ''}`} />
+                <ChevronDown className={`w-5 h-5 text-primary transition-transform duration-200 shrink-0 ${isOpen ? 'rotate-180' : ''}`} />
               </button>
               {isOpen && (
-                <div className="px-6 pb-6 text-xs md:text-sm text-[#5b5e68] leading-relaxed border-t border-[#c4c5d6]/20 pt-4">
+                <div className="px-5 pb-5 text-base text-[#5b5e68] leading-relaxed border-t border-[#c4c5d6]/20 pt-3.5 font-sans">
                   {faq.a}
                 </div>
               )}
