@@ -193,7 +193,7 @@ export default function EditUrlModal({ isOpen, urlItem, onClose, onSuccess }: Ed
                       <span className="px-3.5 py-2.5 bg-[#f8fafc] border-r border-[#e2e8f0] text-sm font-mono text-[#64748b] shrink-0 font-semibold select-none">
                         {domainHost}/
                       </span>
-                      <input
+                      <Input
                         {...field}
                         type="text"
                         onChange={(e) => {
@@ -201,7 +201,7 @@ export default function EditUrlModal({ isOpen, urlItem, onClose, onSuccess }: Ed
                           field.onChange(clean);
                         }}
                         placeholder="promo-2026"
-                        className="w-full h-10 px-3 bg-transparent font-mono text-sm text-[#0f172a] outline-none"
+                        className="w-full h-10 px-3 bg-transparent font-mono text-sm text-[#0f172a] border-none shadow-none focus-visible:ring-0 outline-none"
                       />
                     </div>
                   </FormControl>

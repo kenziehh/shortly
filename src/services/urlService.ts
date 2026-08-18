@@ -87,9 +87,15 @@ export class UrlService {
   }
 
   /**
-   * Fetch User URLs with Search & Filter
+   * Fetch User URLs with Search, Filter & Full Pagination Metadata
    */
-  static async getUserUrls(userId: string, search?: string, status?: string) {
+  static async getUserUrls(
+    userId: string,
+    search?: string,
+    status?: string,
+    page: number = 1,
+    limit: number = 10
+  ) {
     const whereClause: any = { userId };
 
     if (search) {
@@ -119,23 +125,44 @@ export class UrlService {
       ];
     }
 
-    return prisma.url.findMany({
-      where: whereClause,
-      orderBy: { createdAt: 'desc' },
-      select: {
-        id: true,
-        shortCode: true,
-        customAlias: true,
-        originalUrl: true,
-        title: true,
-        password: true,
-        isActive: true,
-        clickCount: true,
-        maxClicks: true,
-        expiresAt: true,
-        createdAt: true,
+    const safePage = Math.max(1, page);
+    const safeLimit = Math.max(1, Math.min(100, limit));
+    const skip = (safePage - 1) * safeLimit;
+
+    const [totalCount, urls] = await Promise.all([
+      prisma.url.count({ where: whereClause }),
+      prisma.url.findMany({
+        where: whereClause,
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take: safeLimit,
+        select: {
+          id: true,
+          shortCode: true,
+          customAlias: true,
+          originalUrl: true,
+          title: true,
+          password: true,
+          isActive: true,
+          clickCount: true,
+          maxClicks: true,
+          expiresAt: true,
+          createdAt: true,
+        },
+      }),
+    ]);
+
+    const totalPages = Math.ceil(totalCount / safeLimit) || 1;
+
+    return {
+      urls,
+      pagination: {
+        totalCount,
+        page: safePage,
+        limit: safeLimit,
+        totalPages,
       },
-    });
+    };
   }
 
   /**

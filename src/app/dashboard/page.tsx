@@ -22,6 +22,16 @@ export default function DashboardPage() {
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
 
+  // Pagination State
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [paginationMeta, setPaginationMeta] = useState({
+    totalCount: 0,
+    page: 1,
+    limit: 10,
+    totalPages: 1,
+  });
+
   // Modal Control States
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [editingUrl, setEditingUrl] = useState<any | null>(null);
@@ -32,10 +42,11 @@ export default function DashboardPage() {
   const [selectedQrUrl, setSelectedQrUrl] = useState<{ url: string; title: string } | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  // Debounce search effect (300ms delay)
+  // Debounce search effect (300ms delay) reset to page 1
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(search);
+      setPage(1);
     }, 300);
 
     return () => clearTimeout(timer);
@@ -58,10 +69,15 @@ export default function DashboardPage() {
   const fetchUrls = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/urls?search=${encodeURIComponent(debouncedSearch)}&status=${statusFilter}`);
+      const res = await fetch(
+        `/api/urls?search=${encodeURIComponent(debouncedSearch)}&status=${statusFilter}&page=${page}&limit=${limit}`
+      );
       const data = await res.json();
       if (data.urls) {
         setUrls(data.urls);
+        if (data.pagination) {
+          setPaginationMeta(data.pagination);
+        }
       }
     } catch (err) {
       console.error('Fetch urls error:', err);
@@ -76,7 +92,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (user) fetchUrls();
-  }, [user, debouncedSearch, statusFilter]);
+  }, [user, debouncedSearch, statusFilter, page, limit]);
 
   const copyLink = (code: string, id: string) => {
     const full = `${window.location.protocol}//${window.location.host}/${code}`;
@@ -97,7 +113,7 @@ export default function DashboardPage() {
         {/* Modular Header & Quota Progress */}
         <DashboardHeader
           user={user}
-          urlsCount={urls.length}
+          urlsCount={paginationMeta.totalCount || urls.length}
           onCreateClick={() => setIsCreateOpen(true)}
         />
 
@@ -113,18 +129,29 @@ export default function DashboardPage() {
         {/* Search & Filter Toolbar with 300ms Debounce */}
         <DashboardToolbar
           search={search}
-          onSearchChange={setSearch}
+          onSearchChange={(val) => {
+            setSearch(val);
+          }}
           statusFilter={statusFilter}
-          onStatusFilterChange={setStatusFilter}
+          onStatusFilterChange={(val) => {
+            setStatusFilter(val);
+            setPage(1);
+          }}
           onRefresh={fetchUrls}
         />
 
-        {/* Expanded Multi-Column Table Layout */}
+        {/* Expanded Multi-Column Table Layout with Shadcn UI Pagination */}
         <DashboardTable
           urls={urls}
           loading={loading}
           search={search}
           copiedId={copiedId}
+          pagination={paginationMeta}
+          onPageChange={(newPage) => setPage(newPage)}
+          onLimitChange={(newLimit) => {
+            setLimit(newLimit);
+            setPage(1);
+          }}
           onCopy={copyLink}
           onEdit={(u) => setEditingUrl(u)}
           onDelete={(u) => setDeletingUrl(u)}

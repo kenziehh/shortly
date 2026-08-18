@@ -13,11 +13,13 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const search = searchParams.get('search') || undefined;
     const status = searchParams.get('status') || undefined;
+    const page = parseInt(searchParams.get('page') || '1', 10);
+    const limit = parseInt(searchParams.get('limit') || '10', 10);
 
-    const urls = await UrlService.getUserUrls(session.userId, search, status);
-    return NextResponse.json({ urls });
+    const result = await UrlService.getUserUrls(session.userId, search, status, page, limit);
+    return NextResponse.json(result);
   } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    return NextResponse.json({ error: err.message || 'Failed to fetch short links.' }, { status: 500 });
   }
 }
 
@@ -29,11 +31,14 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const validated = createUrlSchema.parse(body);
-    const createdUrl = await UrlService.createUrl(session.userId, validated);
+    const validatedData = createUrlSchema.parse(body);
 
-    return NextResponse.json({ success: true, url: createdUrl });
+    const newUrl = await UrlService.createUrl(session.userId, validatedData);
+    return NextResponse.json({ success: true, url: newUrl }, { status: 201 });
   } catch (err: any) {
+    if (err.errors) {
+      return NextResponse.json({ error: err.errors[0]?.message || 'Invalid form input.' }, { status: 400 });
+    }
     return NextResponse.json(
       { error: err.message || 'Failed to create short link.' },
       { status: 400 }

@@ -65,7 +65,7 @@ export class AnalyticsService {
       throw new Error('Short link not found or access denied.');
     }
 
-    // Process Devices Breakdown
+    // Process Devices, Browsers & Referrers Breakdown
     const devicesMap: Record<string, number> = {};
     const browsersMap: Record<string, number> = {};
     const referrersMap: Record<string, number> = {};
@@ -80,6 +80,36 @@ export class AnalyticsService {
       referrersMap[r] = (referrersMap[r] || 0) + 1;
     });
 
+    // Process Daily Clicks Trend (Past 7 Days)
+    const dailyMap: Record<string, number> = {};
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const dateStr = d.toISOString().slice(0, 10);
+      dailyMap[dateStr] = 0;
+    }
+
+    urlItem.clicks.forEach((c: any) => {
+      const dateStr = new Date(c.timestamp).toISOString().slice(0, 10);
+      if (dailyMap[dateStr] !== undefined) {
+        dailyMap[dateStr] += 1;
+      }
+    });
+
+    const dailyClicks = Object.entries(dailyMap).map(([date, count]) => ({
+      date,
+      count,
+    }));
+
+    const telemetryData = {
+      totalClicks: urlItem.clickCount,
+      dailyClicks,
+      devices: Object.entries(devicesMap).map(([name, count]) => ({ name, count, device: name })),
+      browsers: Object.entries(browsersMap).map(([name, count]) => ({ name, count, browser: name })),
+      referrers: Object.entries(referrersMap).map(([name, count]) => ({ name, count, referrer: name })),
+      recentClicks: urlItem.clicks.slice(0, 20),
+    };
+
     return {
       url: {
         id: urlItem.id,
@@ -87,19 +117,15 @@ export class AnalyticsService {
         customAlias: urlItem.customAlias,
         originalUrl: urlItem.originalUrl,
         title: urlItem.title,
+        password: urlItem.password,
         clickCount: urlItem.clickCount,
         maxClicks: urlItem.maxClicks,
         expiresAt: urlItem.expiresAt,
         isActive: urlItem.isActive,
         createdAt: urlItem.createdAt,
       },
-      telemetry: {
-        totalClicks: urlItem.clickCount,
-        devices: Object.entries(devicesMap).map(([name, count]) => ({ name, count })),
-        browsers: Object.entries(browsersMap).map(([name, count]) => ({ name, count })),
-        referrers: Object.entries(referrersMap).map(([name, count]) => ({ name, count })),
-        recentClicks: urlItem.clicks.slice(0, 20),
-      },
+      analytics: telemetryData,
+      telemetry: telemetryData,
     };
   }
 }

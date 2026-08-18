@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import Link from 'next/link';
 import {
   Link2,
@@ -19,12 +20,29 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from '@/components/ui/tooltip';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
 
 interface DashboardTableProps {
   urls: any[];
   loading: boolean;
   search: string;
   copiedId: string | null;
+  pagination?: {
+    totalCount: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+  onPageChange?: (newPage: number) => void;
+  onLimitChange?: (newLimit: number) => void;
   onCopy: (code: string, id: string) => void;
   onEdit: (url: any) => void;
   onDelete: (url: any) => void;
@@ -38,6 +56,9 @@ export default function DashboardTable({
   loading,
   search,
   copiedId,
+  pagination,
+  onPageChange,
+  onLimitChange,
   onCopy,
   onEdit,
   onDelete,
@@ -97,7 +118,6 @@ export default function DashboardTable({
             {urls.map((u) => {
               const isExpired = u.expiresAt && new Date(u.expiresAt) <= new Date();
               const isMaxReached = u.maxClicks && u.clickCount >= u.maxClicks;
-              const isLinkActive = u.isActive && !isExpired && !isMaxReached;
 
               // Always prefer customAlias over random shortCode if customAlias exists!
               const displaySlug = u.customAlias || u.shortCode;
@@ -256,6 +276,69 @@ export default function DashboardTable({
           </tbody>
         </table>
       </div>
+
+      {/* Shadcn UI Pagination Bar */}
+      {pagination && pagination.totalCount > 0 && (
+        <div className="border-t border-[#e2e8f0] px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4 bg-white">
+          <div className="flex items-center gap-3 text-sm font-sans text-[#64748b]">
+            <span>
+              Showing <strong className="text-[#0f172a]">{urls.length > 0 ? (pagination.page - 1) * pagination.limit + 1 : 0}</strong> to <strong className="text-[#0f172a]">{Math.min(pagination.page * pagination.limit, pagination.totalCount)}</strong> of <strong className="text-[#0f172a]">{pagination.totalCount}</strong> links
+            </span>
+
+            <div className="flex items-center gap-1.5 ml-2">
+              <span className="text-xs text-[#94a3b8]">Per page:</span>
+              <select
+                value={pagination.limit}
+                onChange={(e) => onLimitChange?.(Number(e.target.value))}
+                className="bg-[#f8fafc] border border-[#e2e8f0] rounded-lg text-xs font-bold text-[#0f172a] px-2 py-1 outline-none cursor-pointer"
+              >
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+                <option value={50}>50</option>
+              </select>
+            </div>
+          </div>
+
+          <Pagination className="w-auto mx-0">
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  onClick={() => pagination.page > 1 && onPageChange?.(pagination.page - 1)}
+                  className={pagination.page <= 1 ? 'pointer-events-none opacity-50' : ''}
+                />
+              </PaginationItem>
+
+              {Array.from({ length: pagination.totalPages }, (_, i) => i + 1)
+                .filter((p) => p === 1 || p === pagination.totalPages || Math.abs(p - pagination.page) <= 1)
+                .map((p, idx, arr) => (
+                  <React.Fragment key={p}>
+                    {idx > 0 && p - arr[idx - 1] > 1 && (
+                      <PaginationItem>
+                        <PaginationEllipsis />
+                      </PaginationItem>
+                    )}
+                    <PaginationItem>
+                      <PaginationLink
+                        isActive={p === pagination.page}
+                        onClick={() => onPageChange?.(p)}
+                      >
+                        {p}
+                      </PaginationLink>
+                    </PaginationItem>
+                  </React.Fragment>
+                ))}
+
+              <PaginationItem>
+                <PaginationNext
+                  onClick={() => pagination.page < pagination.totalPages && onPageChange?.(pagination.page + 1)}
+                  className={pagination.page >= pagination.totalPages ? 'pointer-events-none opacity-50' : ''}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      )}
     </div>
   );
 }

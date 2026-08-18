@@ -1,7 +1,8 @@
 'use client';
 
-import { Search, Filter, RefreshCw } from 'lucide-react';
+import { Search, Filter, RefreshCw, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 interface DashboardToolbarProps {
   search: string;
@@ -21,32 +22,34 @@ export default function DashboardToolbar({
   return (
     <div className="bg-white border border-[#e2e8f0] rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xs">
       <div className="relative flex-1 w-full flex items-center">
-        <Search className="w-5 h-5 absolute left-4 text-[#94a3b8]" />
-        <input
+        <Search className="w-5 h-5 absolute left-4 text-[#94a3b8] pointer-events-none z-10" />
+        <Input
           type="text"
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
           placeholder="Search links by title, target URL, or custom slug..."
-          className="w-full h-12 pl-12 pr-4 bg-[#f8fafc] border border-[#e2e8f0] rounded-xl text-base font-sans text-[#0f172a] placeholder:text-[#94a3b8] outline-none focus:border-primary focus:bg-white transition-all"
+          className="w-full h-12 pl-12 pr-10 bg-[#f8fafc] border border-[#e2e8f0] rounded-xl text-base font-sans text-[#0f172a] placeholder:text-[#94a3b8] outline-none focus:border-primary focus:bg-white transition-all shadow-none"
         />
         {search && (
           <button
+            type="button"
             onClick={() => onSearchChange('')}
-            className="absolute right-4 text-sm font-sans text-[#94a3b8] hover:text-[#0f172a]"
+            className="absolute right-3.5 p-1 rounded-lg text-[#94a3b8] hover:text-[#0f172a] hover:bg-slate-200/50 transition-colors"
+            title="Clear search"
           >
-            Clear
+            <X className="w-4.5 h-4.5" />
           </button>
         )}
       </div>
 
       <div className="flex items-center gap-3 w-full sm:w-auto">
-        <div className="flex items-center gap-2 text-base font-sans text-[#64748b] px-4 py-2.5 bg-[#f8fafc] border border-[#e2e8f0] rounded-xl">
+        <div className="flex items-center gap-2 text-base font-sans text-[#64748b] px-4 py-2 bg-[#f8fafc] border border-[#e2e8f0] rounded-xl">
           <Filter className="w-4.5 h-4.5 text-[#64748b]" />
-          <span>Status:</span>
+          <span className="text-sm font-semibold">Status:</span>
           <select
             value={statusFilter}
             onChange={(e) => onStatusFilterChange(e.target.value)}
-            className="bg-transparent font-sans text-base font-semibold text-[#0f172a] outline-none cursor-pointer"
+            className="bg-transparent font-sans text-sm font-bold text-[#0f172a] outline-none cursor-pointer"
           >
             <option value="all">All Links</option>
             <option value="active">Active Only</option>
@@ -58,7 +61,7 @@ export default function DashboardToolbar({
           variant="outline"
           size="sm"
           onClick={onRefresh}
-          className="h-12 px-4 rounded-xl border-[#e2e8f0] text-base font-sans text-[#64748b] hover:text-[#0f172a] hover:bg-[#f8fafc]"
+          className="h-12 px-4 rounded-xl border-[#e2e8f0] text-base font-sans text-[#64748b] hover:text-[#0f172a] hover:bg-[#f8fafc] cursor-pointer"
           title="Refresh List"
         >
           <RefreshCw className="w-4.5 h-4.5" />
