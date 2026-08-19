@@ -28,6 +28,8 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.shortly.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.shortly.entrypoints=web,websecure"
+      - "traefik.http.routers.shortly.tls=true"
       - "traefik.http.services.shortly.loadbalancer.server.port=3000"
     depends_on:
       db:
