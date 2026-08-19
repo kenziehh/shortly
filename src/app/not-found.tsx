@@ -1,6 +1,16 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowLeft, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+
+export const metadata: Metadata = {
+  title: '404 - Page Not Found',
+  description: 'The short link or page you are looking for does not exist or may have expired.',
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default function NotFound() {
   return (

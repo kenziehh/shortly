@@ -1,6 +1,15 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import RegisterForm from '@/components/auth/RegisterForm';
+
+export const metadata: Metadata = {
+  title: 'Create Account',
+  description: 'Create a free Shortly account to manage custom short links, set password protection, and view telemetry analytics.',
+  alternates: {
+    canonical: '/register',
+  },
+};
 
 export default function RegisterPage() {
   return (

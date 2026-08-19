@@ -1,6 +1,15 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import LoginForm from '@/components/auth/LoginForm';
+
+export const metadata: Metadata = {
+  title: 'Sign In',
+  description: 'Sign in to your Shortly account to access your link dashboard and view analytics telemetry.',
+  alternates: {
+    canonical: '/login',
+  },
+};
 
 export default function LoginPage() {
   return (

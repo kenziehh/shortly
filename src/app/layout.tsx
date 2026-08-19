@@ -26,18 +26,103 @@ const poppins = Poppins({
   weight: ['400', '500', '600', '700'],
 });
 
+const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://shortly.app';
+
 export const metadata: Metadata = {
-  title: 'Shortly - Technical URL Shortener & Analytics Platform',
+  metadataBase: new URL(appUrl),
+  title: {
+    default: 'Shortly - Technical URL Shortener & Precision Analytics Platform',
+    template: '%s | Shortly',
+  },
   description:
-    'Modern link management platform with precision analytics, custom aliases, password protection, and expiration dates.',
+    'Modern link management platform with precision analytics, custom aliases, password protection, expiration dates, and custom QR codes.',
+  keywords: [
+    'url shortener',
+    'link shortener',
+    'custom url alias',
+    'link analytics',
+    'link tracking',
+    'qr code generator',
+    'password protected links',
+    'link expiration',
+    'enterprise shortener',
+    'shortly',
+  ],
+  authors: [{ name: 'Shortly Team', url: appUrl }],
+  creator: 'Shortly Inc.',
+  publisher: 'Shortly Inc.',
+  category: 'technology',
+  alternates: {
+    canonical: '/',
+  },
   icons: {
     icon: [
+      { url: '/icon.png', type: 'image/png' },
       { url: '/shortly.png', type: 'image/png' },
-      { url: '/shortly-nav.png', type: 'image/png' },
     ],
-    shortcut: '/shortly.png',
-    apple: '/shortly.png',
+    shortcut: '/favicon.ico',
+    apple: '/apple-icon.png',
   },
+  openGraph: {
+    title: 'Shortly - Technical URL Shortener & Precision Analytics Platform',
+    description:
+      'Modern link management platform with precision analytics, custom aliases, password protection, expiration dates, and custom QR codes.',
+    url: appUrl,
+    siteName: 'Shortly',
+    locale: 'en_US',
+    type: 'website',
+    images: [
+      {
+        url: '/opengraph-image',
+        width: 1200,
+        height: 630,
+        alt: 'Shortly - Technical URL Shortener & Analytics Platform',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Shortly - Technical URL Shortener & Precision Analytics Platform',
+    description:
+      'Modern link management platform with precision analytics, custom aliases, password protection, and expiration dates.',
+    creator: '@shortly',
+    images: ['/opengraph-image'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+};
+
+const jsonLdWebApplication = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: 'Shortly',
+  url: appUrl,
+  description:
+    'Modern link management platform with precision analytics, custom aliases, password protection, and expiration dates.',
+  applicationCategory: 'BusinessApplication',
+  operatingSystem: 'All',
+  offers: {
+    '@type': 'Offer',
+    price: '0',
+    priceCurrency: 'USD',
+  },
+};
+
+const jsonLdOrganization = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Shortly Inc.',
+  url: appUrl,
+  logo: `${appUrl}/shortly-nav.png`,
 };
 
 export default function RootLayout({
@@ -47,6 +132,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${plusJakartaSans.variable} ${inter.variable} ${poppins.variable}`}>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdWebApplication) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdOrganization) }}
+        />
+      </head>
       <body className="min-h-screen bg-background text-foreground antialiased flex flex-col font-['Inter']">
         <QueryProvider>
           <TooltipProvider>
