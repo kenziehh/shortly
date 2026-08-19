@@ -94,22 +94,19 @@ Access the application at `http://localhost:3000`.
 
 ---
 
-### 2. Production Deployment (`docker-compose.yml`)
+### 2. Production Deployment with Traefik Reverse Proxy (`docker-compose.yml`)
 
-Runs production-optimized multi-stage Docker build with PostgreSQL database container:
+If you are using **Traefik v3** (with SSL / Let's Encrypt), add your domain and network to `.env` or run:
 
 ```bash
+# Set your domain in .env
+DOMAIN=shortly.yourdomain.com
+
 # Build and start production stack in detached mode
 docker compose up -d --build
 
-# Check running containers
-docker compose ps
-
 # View application logs
 docker compose logs -f web
-
-# Stop production stack
-docker compose down
 ```
 
 ---
