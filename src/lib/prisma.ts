@@ -8,7 +8,7 @@ const globalForPrisma = globalThis as unknown as {
 
 const connectionString =
   process.env.DATABASE_URL ||
-  'postgresql://postgres:postgres@localhost:5432/url_shortener?schema=public';
+  'postgresql://postgres:postgres@localhost:5432/shortly?schema=public';
 
 const pool = new Pool({ connectionString });
 const adapter = new PrismaPg(pool);

@@ -15,7 +15,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Set dummy DATABASE_URL for build phase
-ENV DATABASE_URL="postgresql://postgres:postgres@localhost:5432/url_shortener?schema=public"
+ENV DATABASE_URL="postgresql://postgres:postgres@localhost:5432/shortly?schema=public"
 ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN npx prisma generate
