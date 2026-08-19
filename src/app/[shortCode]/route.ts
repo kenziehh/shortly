@@ -30,11 +30,13 @@ export async function GET(
           <meta property="og:url" content="${baseUrl}/${rawCode}">
           <meta property="og:title" content="404 - Link Not Found | Shortly">
           <meta property="og:description" content="The short link ${rawCode} was not found.">
-          <meta property="og:image" content="${baseUrl}/opengraph-image">
+          <meta property="og:image" content="${baseUrl}/og.png">
+          <meta property="og:image:secure_url" content="${baseUrl}/og.png">
+          <meta property="og:image:type" content="image/png">
           <meta property="og:image:width" content="1200">
           <meta property="og:image:height" content="630">
           <meta name="twitter:card" content="summary_large_image">
-          <meta name="twitter:image" content="${baseUrl}/opengraph-image">
+          <meta name="twitter:image" content="${baseUrl}/og.png">
           <link rel="icon" href="${baseUrl}/icon">
           <link rel="apple-touch-icon" href="${baseUrl}/apple-icon">
           <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -88,11 +90,13 @@ export async function GET(
           <meta property="og:url" content="${baseUrl}/${rawCode}">
           <meta property="og:title" content="Link Expired | Shortly">
           <meta property="og:description" content="This short link has expired or reached maximum clicks.">
-          <meta property="og:image" content="${baseUrl}/opengraph-image">
+          <meta property="og:image" content="${baseUrl}/og.png">
+          <meta property="og:image:secure_url" content="${baseUrl}/og.png">
+          <meta property="og:image:type" content="image/png">
           <meta property="og:image:width" content="1200">
           <meta property="og:image:height" content="630">
           <meta name="twitter:card" content="summary_large_image">
-          <meta name="twitter:image" content="${baseUrl}/opengraph-image">
+          <meta name="twitter:image" content="${baseUrl}/og.png">
           <link rel="icon" href="${baseUrl}/icon">
           <link rel="apple-touch-icon" href="${baseUrl}/apple-icon">
           <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -143,8 +147,8 @@ export async function GET(
         <meta property="og:url" content="${baseUrl}/${rawCode}">
         <meta property="og:title" content="${pageTitle}">
         <meta property="og:description" content="Clicking will redirect to target destination URL. Shortened with Shortly.">
-        <meta property="og:image" content="${baseUrl}/opengraph-image">
-        <meta property="og:image:secure_url" content="${baseUrl}/opengraph-image">
+        <meta property="og:image" content="${baseUrl}/og.png">
+        <meta property="og:image:secure_url" content="${baseUrl}/og.png">
         <meta property="og:image:type" content="image/png">
         <meta property="og:image:width" content="1200">
         <meta property="og:image:height" content="630">
@@ -152,7 +156,7 @@ export async function GET(
         <meta name="twitter:card" content="summary_large_image">
         <meta name="twitter:title" content="${pageTitle}">
         <meta name="twitter:description" content="Clicking will redirect to target destination URL. Shortened with Shortly.">
-        <meta name="twitter:image" content="${baseUrl}/opengraph-image">
+        <meta name="twitter:image" content="${baseUrl}/og.png">
         <link rel="icon" href="${baseUrl}/icon">
         <link rel="apple-touch-icon" href="${baseUrl}/apple-icon">
         <link rel="preconnect" href="https://fonts.googleapis.com">

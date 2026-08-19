@@ -73,9 +73,11 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: '/opengraph-image',
+        url: `${appUrl}/og.png`,
+        secureUrl: `${appUrl}/og.png`,
         width: 1200,
         height: 630,
+        type: 'image/png',
         alt: 'Shortly - Technical URL Shortener & Analytics Platform',
       },
     ],
@@ -86,7 +88,7 @@ export const metadata: Metadata = {
     description:
       'Modern link management platform with precision analytics, custom aliases, password protection, and expiration dates.',
     creator: '@shortly',
-    images: ['/opengraph-image'],
+    images: [`${appUrl}/og.png`],
   },
   robots: {
     index: true,
