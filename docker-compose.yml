@@ -7,8 +7,6 @@ services:
       - .env
     volumes:
       - postgres_prod_data:/var/lib/postgresql/data
-    networks:
-      - shortly_internal
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-shortly}"]
       interval: 5s
@@ -25,9 +23,8 @@ services:
       - .env
     environment:
       NODE_ENV: production
-    networks:
-      - shortly_internal
-      - traefik_net
+    ports:
+      - "3000:3000"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.shortly.rule=Host(`${DOMAIN}`)"
@@ -35,13 +32,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-
-networks:
-  shortly_internal:
-    driver: bridge
-  traefik_net:
-    external: true
-    name: ${TRAEFIK_NETWORK:-traefik_default}
 
 volumes:
   postgres_prod_data:
