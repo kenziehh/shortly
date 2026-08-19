@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { createUrlSchema, type CreateUrlFormValues } from '@/lib/validations/url';
+import { createUrlSchema, normalizeUrl, type CreateUrlFormValues } from '@/lib/validations/url';
 import { useCreateUrl } from '@/hooks/useUrls';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -53,11 +53,11 @@ export default function CreateUrlModal({ isOpen, onClose }: CreateUrlModalProps)
     createMutation.mutate(
       {
         title: values.title || undefined,
-        originalUrl: values.originalUrl,
+        originalUrl: normalizeUrl(values.originalUrl),
         customAlias: values.customAlias || undefined,
         password: values.password || undefined,
-        maxClicks: values.maxClicks ? parseInt(values.maxClicks, 10) : undefined,
-        expiresAt: values.expiresAt || undefined,
+        maxClicks: values.maxClicks ? parseInt(String(values.maxClicks), 10) : undefined,
+        expiresAt: values.expiresAt ? String(values.expiresAt) : undefined,
       },
       {
         onSuccess: () => {
@@ -188,6 +188,7 @@ export default function CreateUrlModal({ isOpen, onClose }: CreateUrlModalProps)
                     <FormControl>
                       <Input
                         {...field}
+                        value={field.value ?? ''}
                         type="number"
                         placeholder="e.g. 1000"
                         className="h-10 rounded-xl text-sm font-mono border-[#e2e8f0]"
@@ -210,6 +211,7 @@ export default function CreateUrlModal({ isOpen, onClose }: CreateUrlModalProps)
                   <FormControl>
                     <Input
                       {...field}
+                      value={field.value instanceof Date ? field.value.toISOString().slice(0, 16) : (field.value ?? '')}
                       type="datetime-local"
                       className="h-10 rounded-xl text-sm font-mono border-[#e2e8f0]"
                     />

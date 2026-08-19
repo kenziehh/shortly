@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { editUrlSchema, type EditUrlFormValues } from '@/lib/validations/url';
+import { editUrlSchema, normalizeUrl, type EditUrlFormValues } from '@/lib/validations/url';
 import { useUpdateUrl } from '@/hooks/useUrls';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -89,13 +89,13 @@ export default function EditUrlModal({ isOpen, urlItem, onClose }: EditUrlModalP
         id: urlItem.id,
         payload: {
           title: values.title || '',
-          originalUrl: values.originalUrl,
+          originalUrl: normalizeUrl(values.originalUrl),
           customAlias: values.customAlias || '',
           password: values.password || '',
           removePassword: removePassword,
-          maxClicks: removeMaxClicks ? '' : values.maxClicks || '',
+          maxClicks: removeMaxClicks ? '' : values.maxClicks !== undefined && values.maxClicks !== null ? String(values.maxClicks) : '',
           removeMaxClicks: removeMaxClicks,
-          expiresAt: removeExpiresAt ? '' : values.expiresAt || '',
+          expiresAt: removeExpiresAt ? '' : values.expiresAt ? String(values.expiresAt) : '',
           removeExpiresAt: removeExpiresAt,
         },
       },
@@ -230,6 +230,7 @@ export default function EditUrlModal({ isOpen, urlItem, onClose }: EditUrlModalP
                     <FormControl>
                       <Input
                         {...field}
+                        value={field.value ?? ''}
                         type="number"
                         placeholder="e.g. 1000"
                         className="h-10 rounded-xl text-sm font-mono border-[#e2e8f0]"
@@ -254,6 +255,7 @@ export default function EditUrlModal({ isOpen, urlItem, onClose }: EditUrlModalP
                   <FormControl>
                     <Input
                       {...field}
+                      value={field.value instanceof Date ? field.value.toISOString().slice(0, 16) : (field.value ?? '')}
                       type="datetime-local"
                       className="h-10 rounded-xl text-sm font-mono border-[#e2e8f0]"
                       disabled={removeExpiresAt}
