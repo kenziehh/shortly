@@ -14,6 +14,10 @@ export async function GET(
     // Find URL by Code or Alias via UrlService
     const urlItem = await UrlService.findByCodeOrAlias(rawCode);
 
+    const host = req.headers.get('host') || 'shortly.app';
+    const proto = req.headers.get('x-forwarded-proto') || 'https';
+    const baseUrl = `${proto}://${host}`;
+
     if (!urlItem) {
       return new NextResponse(
         `<!DOCTYPE html>
@@ -21,6 +25,18 @@ export async function GET(
         <head>
           <title>404 - Link Not Found | Shortly</title>
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <meta property="og:site_name" content="Shortly">
+          <meta property="og:type" content="website">
+          <meta property="og:url" content="${baseUrl}/${rawCode}">
+          <meta property="og:title" content="404 - Link Not Found | Shortly">
+          <meta property="og:description" content="The short link ${rawCode} was not found.">
+          <meta property="og:image" content="${baseUrl}/opengraph-image">
+          <meta property="og:image:width" content="1200">
+          <meta property="og:image:height" content="630">
+          <meta name="twitter:card" content="summary_large_image">
+          <meta name="twitter:image" content="${baseUrl}/opengraph-image">
+          <link rel="icon" href="${baseUrl}/icon">
+          <link rel="apple-touch-icon" href="${baseUrl}/apple-icon">
           <link rel="preconnect" href="https://fonts.googleapis.com">
           <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
           <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -67,6 +83,18 @@ export async function GET(
         <head>
           <title>Link Expired | Shortly</title>
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <meta property="og:site_name" content="Shortly">
+          <meta property="og:type" content="website">
+          <meta property="og:url" content="${baseUrl}/${rawCode}">
+          <meta property="og:title" content="Link Expired | Shortly">
+          <meta property="og:description" content="This short link has expired or reached maximum clicks.">
+          <meta property="og:image" content="${baseUrl}/opengraph-image">
+          <meta property="og:image:width" content="1200">
+          <meta property="og:image:height" content="630">
+          <meta name="twitter:card" content="summary_large_image">
+          <meta name="twitter:image" content="${baseUrl}/opengraph-image">
+          <link rel="icon" href="${baseUrl}/icon">
+          <link rel="apple-touch-icon" href="${baseUrl}/apple-icon">
           <link rel="preconnect" href="https://fonts.googleapis.com">
           <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
           <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -101,13 +129,32 @@ export async function GET(
     // Record Click Analytics Telemetry in Background Service
     await AnalyticsService.recordClick(urlItem.id);
 
+    const pageTitle = urlItem.title ? `${urlItem.title} | Shortly` : 'Redirecting... | Shortly';
+
     // Render Premium Circular SVG Progress Bar Interstitial Redirect Page with Enriched Brand Logo
     return new NextResponse(
       `<!DOCTYPE html>
       <html lang="en">
       <head>
-        <title>Redirecting... | Shortly</title>
+        <title>${pageTitle}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta property="og:site_name" content="Shortly">
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="${baseUrl}/${rawCode}">
+        <meta property="og:title" content="${pageTitle}">
+        <meta property="og:description" content="Clicking will redirect to target destination URL. Shortened with Shortly.">
+        <meta property="og:image" content="${baseUrl}/opengraph-image">
+        <meta property="og:image:secure_url" content="${baseUrl}/opengraph-image">
+        <meta property="og:image:type" content="image/png">
+        <meta property="og:image:width" content="1200">
+        <meta property="og:image:height" content="630">
+        <meta property="og:image:alt" content="Shortly - Technical URL Shortener">
+        <meta name="twitter:card" content="summary_large_image">
+        <meta name="twitter:title" content="${pageTitle}">
+        <meta name="twitter:description" content="Clicking will redirect to target destination URL. Shortened with Shortly.">
+        <meta name="twitter:image" content="${baseUrl}/opengraph-image">
+        <link rel="icon" href="${baseUrl}/icon">
+        <link rel="apple-touch-icon" href="${baseUrl}/apple-icon">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
